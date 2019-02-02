@@ -13,5 +13,5 @@ $ python server.py &
 TEST
 ===
 ```html
-http://0.0.0.0:5000/ 
+http://localhost:5000
 ```

@@ -28,5 +28,5 @@ if __name__ == '__main__':
 	handler = RotatingFileHandler('server.log', maxBytes=10000, backupCount=1)
 	handler.setLevel(logging.INFO)
 	app.logger.addHandler(handler)
-	app.run(host="0.0.0.0",port=5000)
+	app.run(host="127.0.0.1",port=5000)
 
