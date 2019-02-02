@@ -1,2 +1,3 @@
 /client/week1/Library
-/aiServer/server.log
+*.log
+*.pyc

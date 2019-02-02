@@ -4,6 +4,7 @@
 import json
 import requests
 import logging
+from models import eliza
 
 from logging.handlers import RotatingFileHandler
 
@@ -11,16 +12,30 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-@app.route("/")
+# Fall-back response bot.
+eliza_bot = eliza.eliza()
+
+@app.route("/", methods=['GET', 'POST'])
 def root(): 
 	return jsonify({"response" : "Hello Word!"})
 
 @app.route('/listen', methods=['POST'])
 def listen():
-	query = json.loads(request.data)
+	try:
+		query = json.loads(request.data)['content']
+	except Exception:
+		return jsonify({"response" : "Bad request!"}), 400
+
+	# Default response.
+	response = "I could not understand!"
+
+	# Smart response.
+
+	# Fall-back response.
+	response = eliza_bot.respond(query)
+
 	response = {
-		"received" : query,
-		"response" : "I am the chat bot!"
+		"response" : response
 	}
 	return jsonify(response)  
 
