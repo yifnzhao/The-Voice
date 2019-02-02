@@ -1,2 +1,8 @@
 /client/week1/Library
 /aiServer/server.log
+/client/week1/Temp
+/client/week1/week1.csproj
+/client/week1/week1.Editor.csproj
+/client/week1/week1.sln
+/voiceServer/AzureSpeechTest/AzureSpeechTest/obj
+/voiceServer/AzureSpeechTest/AzureSpeechTest/bin
