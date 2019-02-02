@@ -1,0 +1,77 @@
+newmtl Model001_Material001
+map_Kd G1_up_d.tga
+map_bump G1_up_n.tga
+
+newmtl Model001_Material002
+map_Kd G1_up_d.tga
+map_bump G1_up_n.tga
+
+newmtl Model001_Material003
+map_Kd G1_base_d.tga
+map_bump G1_base_n.tga
+
+newmtl Model001_Material004
+map_Kd G1_base_d.tga
+map_bump G1_base_n.tga
+
+newmtl Model001_Material005
+map_Kd G1_foot_d.tga
+map_bump G1_foot_n.tga
+
+newmtl Model001_Material006
+map_Kd G1_eye_d.tga
+map_bump G1_eye_nl.tga
+
+newmtl Model001_Material007
+map_Kd G1_eye_d.tga
+map_bump G1_eye_n.tga
+
+newmtl Model001_Material008
+map_Kd G1_head_d.tga
+map_bump G1_head_n.tga
+
+newmtl Model001_Material009
+map_Kd HF_inner_d.tga
+map_bump HF_inner_n.tga
+
+newmtl Model001_Material010
+map_Kd G1_up_d.tga
+map_bump G1_up_n.tga
+
+newmtl Model001_Material011
+map_Kd G1_low_d.tga
+map_bump G1_low_n.tga
+
+newmtl Model001_Material012
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material013
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material014
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material015
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material016
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material017
+map_Kd G1_hair_d.tga
+map_bump G1_hair_n.tga
+
+newmtl Model001_Material018
+map_Kd G1_lash_d.tga
+
+newmtl Model001_Material019
+map_Kd G1_lash_d.tga
+
+newmtl Model001_Material020
+map_Kd G1_line_d.tga
+
