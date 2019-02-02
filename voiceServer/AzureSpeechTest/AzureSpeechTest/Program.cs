@@ -8,27 +8,61 @@ using CognitiveServicesTTS;
 using System.IO;
 using System.Media;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace AzureSpeechTest
 {
+
+    public class SpeechContent
+    {
+        public string content;
+    }
+
+    public class ReturnContent
+    {
+        public string response;
+    }
     class Program
     {
-        static string recognized;
+        static string recognizedByMS;
+        static string recognizedByTheVoice;
         static string accessToken;
+        static NetworkLayer network;
 
+        static string backendUrl = @"http://localhost:5000/listen";
         static void Main(string[] args)
         {
-            AuthTTS();
+            network = new NetworkLayer();
 
-            do
+            try
             {
-                RecognitionWithMicrophoneAsync().Wait();
+                // initiazize
+                AuthTTS();
 
-                StartTTS();
+                do
+                {
+                    RecognitionWithMicrophoneAsync().Wait();
 
-                Console.ReadKey();
+                    SpeechContent c = new SpeechContent() { content = recognizedByMS };
+                    string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+                    string retJson = network.PostJson(backendUrl, json);
+                    Console.WriteLine("Json from backend = " + retJson);
+                    ReturnContent ret = JsonConvert.DeserializeObject<ReturnContent>(retJson);
+                    recognizedByTheVoice = ret.response;
+                    StartTTS();
 
-            } while (true);
+                    Console.ReadKey();
+
+                } while (true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return;
+            }
+
+
+
         }
 
     public static void AuthTTS()
@@ -52,7 +86,7 @@ namespace AzureSpeechTest
 
         public static void StartTTS()
         {
-            if (string.IsNullOrEmpty(recognized))
+            if (string.IsNullOrEmpty(recognizedByTheVoice))
             {
                 Console.WriteLine("Nothing Recognized");
                 return;
@@ -75,7 +109,7 @@ namespace AzureSpeechTest
             {
                 RequestUri = new Uri(requestUri),
                 // Text to be spoken.
-                Text = recognized,
+                Text = recognizedByTheVoice,
                 VoiceType = Gender.Female,
                 // Refer to the documentation for complete list of supported locales.
                 Locale = "en-US",
@@ -144,7 +178,7 @@ namespace AzureSpeechTest
                 {
                     Console.WriteLine($"RECOGNIZED: Duration={result.Duration}");
                     Console.WriteLine($"RECOGNIZED: Text={result.Text}");
-                    recognized = result.Text;
+                    recognizedByMS = result.Text;
                 }
                 else if (result.Reason == ResultReason.NoMatch)
                 {
