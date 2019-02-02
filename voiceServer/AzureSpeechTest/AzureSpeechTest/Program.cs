@@ -22,6 +22,13 @@ namespace AzureSpeechTest
     {
         public string response;
     }
+
+    public class TextToUnity
+    {
+        public string content;
+        public float duration;
+    }
+
     class Program
     {
         static string recognizedByMS;
@@ -110,13 +117,13 @@ namespace AzureSpeechTest
                 RequestUri = new Uri(requestUri),
                 // Text to be spoken.
                 Text = recognizedByTheVoice,
-                VoiceType = Gender.Female,
+                VoiceType = Gender.Female,  // useless!
                 // Refer to the documentation for complete list of supported locales.
                 Locale = "en-US",
                 // You can also customize the output voice. Refer to the documentation to view the different
                 // voices that the TTS service can output.
-                // VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Jessa24KRUS)",
-                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Guy24KRUS)",
+                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Jessa24KRUS)",
+                //VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Guy24KRUS)",
                 // VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
 
                 // Service can return audio in different output format.
