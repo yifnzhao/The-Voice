@@ -1,3 +1,8 @@
-/client/week1/Library
 *.log
 *.pyc
+*.csproj
+*.sln
+/client/week1/Library
+/client/week1/Temp
+/voiceServer/AzureSpeechTest/AzureSpeechTest/obj
+/voiceServer/AzureSpeechTest/AzureSpeechTest/bin
