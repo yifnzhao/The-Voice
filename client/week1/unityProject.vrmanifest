@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.week1.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\XRMTL\\git\\The-Voice\\client\\week1\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "week1 [Testing]"
+        }
+      }
+    }
+  ]
+}

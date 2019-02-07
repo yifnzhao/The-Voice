@@ -20,3 +20,4 @@ MonoBehaviour:
   poseUpdateMode: 8
   activateFirstActionSetOnStart: 1
   editorAppKey: application.generated.unity.week1.exe
+  autoEnableVR: 1
