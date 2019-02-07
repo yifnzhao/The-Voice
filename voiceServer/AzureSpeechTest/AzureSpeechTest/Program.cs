@@ -9,6 +9,7 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using Newtonsoft.Json;
+using ShuoScripts;
 
 namespace AzureSpeechTest
 {
@@ -37,12 +38,28 @@ namespace AzureSpeechTest
         static NetworkLayer network;
 
         static string backendUrl = @"http://localhost:5000/listen";
+
+        static NetworkModule netowrkModule;
         static void Main(string[] args)
         {
-            network = new NetworkLayer();
-
             try
             {
+                network = new NetworkLayer();
+
+                // init network
+                netowrkModule = new NetworkModule();
+                netowrkModule.recvPort = 6000;
+                netowrkModule.sendPort = 6001;
+                netowrkModule.Init(true);
+                netowrkModule.Recv();
+                netowrkModule.Output += (b) =>
+                {
+                    Console.WriteLine(Encoding.ASCII.GetString(b));
+
+                    //string str = "backStrbackStrbackStrbackStrbackStr";
+                    //netowrkModule.Send(Encoding.ASCII.GetBytes(str));
+                };
+
                 // initiazize
                 AuthTTS();
 
@@ -50,6 +67,8 @@ namespace AzureSpeechTest
                 {
                     RecognitionWithMicrophoneAsync().Wait();
 
+                    if (string.IsNullOrEmpty(recognizedByMS))
+                        continue;
                     SpeechContent c = new SpeechContent() { content = recognizedByMS };
                     string json = JsonConvert.SerializeObject(c, Formatting.Indented);
                     string retJson = network.PostJson(backendUrl, json);
@@ -65,6 +84,9 @@ namespace AzureSpeechTest
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+
+                Console.ReadKey();
+
                 return;
             }
 
@@ -142,12 +164,37 @@ namespace AzureSpeechTest
         /// <param name="args">The <see cref="GenericEventArgs{Stream}"/> instance containing the event data.</param>
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
+            bool directPlay = true;
+            //Console.WriteLine("PlayAudio");
             Console.WriteLine(args.EventData);
 
-            // For SoundPlayer to be able to play the wav file, it has to be encoded in PCM.
-            // Use output audio format AudioOutputFormat.Riff16Khz16BitMonoPcm to do that.
-            SoundPlayer player = new SoundPlayer(args.EventData);
-            player.PlaySync();
+            if (directPlay)
+            {
+                // For SoundPlayer to be able to play the wav file, it has to be encoded in PCM.
+                // Use output audio format AudioOutputFormat.Riff16Khz16BitMonoPcm to do that.
+                SoundPlayer player = new SoundPlayer(args.EventData);
+                player.PlaySync();
+            }
+            else
+            {
+                try
+                {
+                    //FileStream f = File.Create("voice.wav");
+                    MemoryStream ms = new MemoryStream();
+                    args.EventData.CopyTo(ms);
+                    byte[] buffer = new byte[ms.Length];
+                    ms.Read(buffer, 0, buffer.Length);
+                    netowrkModule.Send(buffer);
+                    ms.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+
+                SoundPlayer player = new SoundPlayer("voice.wav");
+                player.PlaySync();
+            }
             args.EventData.Dispose();
         }
 

@@ -71,6 +71,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\client\week1\Assets\_Project\Scripts\NetworkModule.cs">
+      <Link>NetworkModule.cs</Link>
+    </Compile>
     <Compile Include="NetworkLayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
