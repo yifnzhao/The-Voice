@@ -43,7 +43,6 @@ public class EmotionHandler : MonoBehaviour {
     void ChangeState(Emotion _emo)
     {
         emotion = _emo;
-        Debug.Log("Emotion:" + _emo);
         switch (emotion)
         {
             case Emotion.Natual:
@@ -73,8 +72,8 @@ public class EmotionHandler : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        mouthCornerLeft.localPosition = Vector3.Lerp(mouthCornerLeft.localPosition, targetLeft, Time.deltaTime);
-        mouthCornerRight.localPosition = Vector3.Lerp(mouthCornerRight.localPosition, targetRight, Time.deltaTime);
+        mouthCornerLeft.localPosition = Vector3.Lerp(mouthCornerLeft.localPosition, targetLeft, Time.deltaTime* 2f);
+        mouthCornerRight.localPosition = Vector3.Lerp(mouthCornerRight.localPosition, targetRight, Time.deltaTime * 2f);
 
 
     }
