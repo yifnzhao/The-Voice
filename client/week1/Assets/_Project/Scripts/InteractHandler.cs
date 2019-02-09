@@ -40,6 +40,8 @@ public class InteractHandler : MonoBehaviour {
 
     public float mcActiveDistance = 0.25f;
 
+    public EyeControl eyeContorl;
+
     // Use this for initialization
     void Start ()
     {
@@ -59,10 +61,18 @@ public class InteractHandler : MonoBehaviour {
         if (headDis < headThreshold)
         {
             aimTarget.position = Vector3.Lerp(aimTarget.position, playerHead.position, Time.deltaTime * headSpeed);
+
+            // girl gaze on player
+            if (headDis > eyeContorl.gazeTooCloseDistance)
+            {
+                eyeContorl.eyeMove = EyeControl.EyeMove.GazeOnPlayer;
+                eyeContorl.eyeGazeTarget = playerHead.gameObject;
+            }
         }
         else
         {
             aimTarget.position = Vector3.Lerp(aimTarget.position, headOriPos, Time.deltaTime * headSpeed);
+            eyeContorl.eyeMove = EyeControl.EyeMove.Moving;
         }
 
 

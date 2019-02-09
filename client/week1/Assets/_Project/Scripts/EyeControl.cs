@@ -13,12 +13,16 @@ public class EyeControl : MonoBehaviour {
     public GameObject eyeballLeft;
     public GameObject eyeballRight;
 
+    [HideInInspector]
     public GameObject eyeGazeTarget;
+
+    public InteractHandler interactHandler;
 
     public enum EyeMove
     {
         Stop = 0,
         Moving,
+        GazeOnPlayer,
 
         Total,
     }
@@ -33,6 +37,8 @@ public class EyeControl : MonoBehaviour {
 
     public EyeMove eyeMove = EyeMove.Stop;
     public EyelidMove eyelidMove = EyelidMove.Stop;
+
+    public float gazeTooCloseDistance = 0.2f;
 
     Quaternion curRotL, curRotR;
     Quaternion oriRotL, oriRotR;
@@ -52,14 +58,20 @@ public class EyeControl : MonoBehaviour {
         StartCoroutine(EyeState());
     }
     float randomEyeMove = 1f;
+    int eyeballTempVar;
     IEnumerator EyeState()
     {
         while (true)
         {
             yield return new WaitForSeconds(randomEyeMove);
 
-            eyeMove = (EyeMove)(((int)eyeMove + 1) % (int)EyeMove.Total);
+            if (eyeMove != EyeMove.GazeOnPlayer)
+            {
+                eyeballTempVar++;
+                eyeMove = eyeballTempVar % 2 == 0 ? EyeMove.Moving : EyeMove.Stop;
+            }
 
+            eyelidMove = EyelidMove.Moving;
             randomEyeMove = UnityEngine.Random.Range(1f, 3f);
         }
     }
@@ -89,11 +101,31 @@ public class EyeControl : MonoBehaviour {
                 break;
             case EyeMove.Stop:
                 {
-                    //curRotL = eyeballLeft.transform.localRotation;
-                    //curRotR = eyeballRight.transform.localRotation;
-                    curRotL = oriRotL;
-                    curRotR = oriRotR;
                     enter = true;
+                }
+                break;
+            case EyeMove.GazeOnPlayer:
+                {
+                    if (Vector3.Distance(eyeGazeTarget.transform.position, interactHandler.girlHead.position) < gazeTooCloseDistance)
+                    {
+                        eyeMove = EyeMove.Moving;
+                        break;
+                    }
+                    eyeballLeft.transform.localRotation = 
+                        Quaternion.Lerp(eyeballLeft.transform.localRotation, oriRotL, Time.deltaTime * 10f);
+                    eyeballRight.transform.localRotation = 
+                        Quaternion.Lerp(eyeballRight.transform.localRotation, oriRotR, Time.deltaTime * 10f);
+
+                    //Vector3 eyeDir = interactHandler.playerHead.position - eyeballLeft.transform.position;
+                    //Quaternion leftEyeRot = Quaternion.LookRotation(eyeDir);
+                    //Quaternion rightEyeRot = leftEyeRot * Quaternion.AngleAxis(10f, eyeballRight.transform.up);
+                    //eyeballLeft.transform.rotation = leftEyeRot;
+                    //eyeballRight.transform.rotation = rightEyeRot;
+
+
+                    //Vector3 leftEyeGazeAt = headToHead - eyeballLeft.transform.position;
+                    //eyeballLeft.transform.LookAt(leftEyeGazeAt);
+                    //eyeballRight.transform.LookAt(eyeGazeTarget.transform);
                 }
                 break;
             default:
@@ -109,7 +141,7 @@ public class EyeControl : MonoBehaviour {
         targetRotL = oriRotL * Quaternion.Euler(xAngle, yAngle, 0);
         targetRotR = oriRotR * Quaternion.Euler(xAngle, yAngle, 0);
 
-        eyelidMove = EyelidMove.Moving;
+        
     }
 
     float eyelidLeftUpperOpenZ = -0.03308579f;

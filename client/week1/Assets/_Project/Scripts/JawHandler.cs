@@ -35,7 +35,7 @@ public class JawHandler : MonoBehaviour {
             return;
 
         _precent = Mathf.Clamp(_precent, 0f, 1f);
-        Debug.Log("+++ Update_Jaw:_present:" + _precent);
+        //Debug.Log("+++ Update_Jaw:_present:" + _precent);
         float curZ = naturalPos + (openPos - naturalPos) * _precent;
         targetPos.x = oriPos.x;
         targetPos.y = oriPos.y;
