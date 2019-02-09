@@ -1,10 +1,14 @@
+#----------------------------------------------------------------------
+#  server.py
+#
 # The Voice : Main server code for NLP and text responses.
 # Author :  Korhan Akcura
-
+#----------------------------------------------------------------------
 import json
 import requests
 import logging
-from models import eliza
+from models.eliza import eliza
+from stubs.emotion import emotion
 
 from logging.handlers import RotatingFileHandler
 
@@ -12,7 +16,8 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-# Fall-back response bot.
+# Response bots.
+emotion_bot = emotion.emotion()
 eliza_bot = eliza.eliza()
 
 @app.route("/", methods=['GET', 'POST'])
@@ -34,8 +39,13 @@ def listen():
 	# Fall-back response.
 	response = eliza_bot.respond(query)
 
+	# Detect emotion.
+	emotion_paramaters = emotion_bot.predict(query)
+
 	response = {
-		"response" : response
+		"response"   : response,
+		"emotion"    : emotion_paramaters["emotion"],
+		"confidence" : emotion_paramaters["confidence"]		
 	}
 	return jsonify(response)  
 
