@@ -92,14 +92,15 @@ namespace ShuoScripts
 
         void ClientRecvThread()
         {
-            try
-            {
+
 #if UNITY_EDITOR
-                Debug.Log("wait for receive");
+            Debug.Log("wait for receive");
 #else
-                Console.WriteLine("wait for receive");
+            Console.WriteLine("wait for receive");
 #endif
-                while (true)
+            while (true)
+            {
+                try
                 {
                     if (clientStream == null)
                         continue;
@@ -111,36 +112,32 @@ namespace ShuoScripts
                         byte[] sizebyte = new byte[sizeof(Int32)];
                         clientStream.Read(sizebyte, 0, sizeof(Int32));
                         int sizeInt = BitConverter.ToInt32(sizebyte, 0);
+#if UNITY_EDITOR
+                        Debug.Log("+++ sizeInt" + sizeInt);
+#endif
                         dataRecv = new byte[sizeInt];
                         clientStream.Read(dataRecv, 0, sizeInt);
                     }
                     if (dataRecv.Length == 0)
-                    {
-#if UNITY_EDITOR
-                        Debug.Log("Received 0 bytes");
-#else
-                        Console.WriteLine("Received 0 bytes");
-#endif
                         continue;
-                    }
 #if UNITY_EDITOR
-                    Debug.Log("Received: " + dataRecv.Length + " bytes");
                     dataRecvFlag = true;
 #else
-                    Console.WriteLine("Received: " + dataRecv.Length + " bytes");
-                    if (Output != null)
-                        Output(dataRecv);
+                Console.WriteLine("Received: " + dataRecv.Length + " bytes");
+                if (Output != null)
+                    Output(dataRecv);
+#endif
+                }
+                catch (Exception e)
+                {
+#if UNITY_EDITOR
+                    Debug.LogError(e.ToString());
+#else
+                    Console.WriteLine(e.ToString());
 #endif
                 }
             }
-            catch (Exception e)
-            {
-#if UNITY_EDITOR
-                Debug.LogError(e.ToString());
-#else
-                Console.WriteLine(e.ToString());
-#endif
-            }
+
         }
         NetworkStream serverStream;
 
@@ -169,14 +166,7 @@ namespace ShuoScripts
                         serverStream.Read(dataRecv, 0, sizeInt);
                     }
                     if (dataRecv.Length == 0)
-                    {
-#if UNITY_EDITOR
-                        Debug.Log("Received 0 bytes");
-#else
-                        Console.WriteLine("Received 0 bytes");
-#endif
                         continue;
-                    }
 #if UNITY_EDITOR
                     Debug.Log("Received: " + dataRecv.Length + " bytes");
                     dataRecvFlag = true;
@@ -228,6 +218,7 @@ namespace ShuoScripts
                         int len = _data.Length;
                         serverStream.Write(BitConverter.GetBytes(len), 0, sizeof(Int32));
                         serverStream.Write(_data, 0, _data.Length);
+                        
                     }
                 }
 
@@ -260,9 +251,17 @@ namespace ShuoScripts
             {
                 if (dataRecvFlag)
                 {
-                    if (Output != null)
-                        Output(dataRecv);
-
+                    try
+                    {
+                        Debug.Log("Received: " + dataRecv.Length + " bytes");
+                        if (Output != null)
+                            Output(dataRecv);
+                    }
+                    catch (Exception e)
+                    {
+                        dataRecvFlag = false;
+                        Debug.LogError(e.ToString());
+                    }
                     dataRecvFlag = false;
                 }
             }

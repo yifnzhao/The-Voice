@@ -58,6 +58,10 @@ namespace AzureSpeechTest
 
                     //string str = "backStrbackStrbackStrbackStrbackStr";
                     //netowrkModule.Send(Encoding.ASCII.GetBytes(str));
+
+                    //FileStream fs = File.Open("voice.wav", FileMode.Open);
+                    //SendStreamToUnity(fs);
+                    //fs.Close();
                 };
 
                 // initiazize
@@ -164,7 +168,7 @@ namespace AzureSpeechTest
         /// <param name="args">The <see cref="GenericEventArgs{Stream}"/> instance containing the event data.</param>
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
-            bool directPlay = true;
+            bool directPlay = false;
             //Console.WriteLine("PlayAudio");
             Console.WriteLine(args.EventData);
 
@@ -179,23 +183,25 @@ namespace AzureSpeechTest
             {
                 try
                 {
-                    //FileStream f = File.Create("voice.wav");
-                    MemoryStream ms = new MemoryStream();
-                    args.EventData.CopyTo(ms);
-                    byte[] buffer = new byte[ms.Length];
-                    ms.Read(buffer, 0, buffer.Length);
-                    netowrkModule.Send(buffer);
-                    ms.Close();
+                    SendStreamToUnity(args.EventData);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
-
-                SoundPlayer player = new SoundPlayer("voice.wav");
-                player.PlaySync();
             }
             args.EventData.Dispose();
+        }
+
+        static void SendStreamToUnity(Stream _stream)
+        {
+            MemoryStream ms = new MemoryStream();
+            _stream.CopyTo(ms);
+            byte[] buffer = new byte[ms.Length];
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.Read(buffer, 0, buffer.Length);
+            netowrkModule.Send(buffer);
+            ms.Close();
         }
 
         /// <summary>

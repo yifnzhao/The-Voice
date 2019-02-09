@@ -24,6 +24,7 @@ public class InteractHandler : MonoBehaviour {
     /// </summary>
     public Transform handTarget;
 
+    public Transform microphone;
 
     public Transform playerHead;
     public Transform playerHand;
@@ -37,6 +38,8 @@ public class InteractHandler : MonoBehaviour {
     Vector3 headOriPos;
     Vector3 handOriPos;
 
+    public float mcActiveDistance = 0.25f;
+
     // Use this for initialization
     void Start ()
     {
@@ -45,6 +48,7 @@ public class InteractHandler : MonoBehaviour {
 
         aimTarget.GetComponent<MeshRenderer>().enabled = false;
         handTarget.GetComponent<MeshRenderer>().enabled = false;
+
     }
 	
 	// Update is called once per frame
@@ -71,6 +75,17 @@ public class InteractHandler : MonoBehaviour {
         else
         {
             handTarget.position = Vector3.Lerp(handTarget.position, handOriPos, Time.deltaTime * handSpeed);
+        }
+
+        // microphone
+        float mcDis = Vector3.Distance(playerHead.position, microphone.position);
+        if (mcDis < mcActiveDistance)
+        {
+            microphone.GetComponent<MicrophoneHandler>().SwitchOn();
+        }
+        else
+        {
+            microphone.GetComponent<MicrophoneHandler>().SwitchOff();
         }
     }
 }
