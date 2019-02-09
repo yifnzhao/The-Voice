@@ -183,7 +183,7 @@ namespace AzureSpeechTest
             {
                 try
                 {
-                    SendStreamToUnity(args.EventData);
+                     SendStreamToUnity(args.EventData);
                 }
                 catch (Exception e)
                 {

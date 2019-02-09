@@ -9,9 +9,18 @@ public class VoiceHandler : MonoBehaviour {
 
     public NetworkModule networkModule;
     public AudioSource audioSource;
+    public AudioVisualization audioVis;
 	// Use this for initialization
 	void Start ()
     {
+        if (audioVis == null)
+        {
+            Debug.LogError("No AudioVisualization");
+            return;
+        }
+
+        audioVis.audioSource = audioSource;
+
         networkModule.Output += (b) => 
         {
             if (b == null || b.Length == 0)
@@ -23,7 +32,7 @@ public class VoiceHandler : MonoBehaviour {
             //clip.SetData(voice, 0);
             audioSource.clip = WavUtility.ToAudioClip(b);
             audioSource.Play();
-
+            audioVis.clip = audioSource.clip;
             //File.WriteAllBytes(Application.streamingAssetsPath+"/voice.wav", b);
         };
     }
