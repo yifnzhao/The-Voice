@@ -111,10 +111,10 @@ public class EyeControl : MonoBehaviour {
                         eyeMove = EyeMove.Moving;
                         break;
                     }
-                    eyeballLeft.transform.localRotation = 
-                        Quaternion.Lerp(eyeballLeft.transform.localRotation, oriRotL, Time.deltaTime * 10f);
-                    eyeballRight.transform.localRotation = 
-                        Quaternion.Lerp(eyeballRight.transform.localRotation, oriRotR, Time.deltaTime * 10f);
+                    //eyeballLeft.transform.localRotation = 
+                    //    Quaternion.Lerp(eyeballLeft.transform.localRotation, oriRotL, Time.deltaTime * 10f);
+                    //eyeballRight.transform.localRotation = 
+                    //    Quaternion.Lerp(eyeballRight.transform.localRotation, oriRotR, Time.deltaTime * 10f);
 
                     //Vector3 eyeDir = interactHandler.playerHead.position - eyeballLeft.transform.position;
                     //Quaternion leftEyeRot = Quaternion.LookRotation(eyeDir);

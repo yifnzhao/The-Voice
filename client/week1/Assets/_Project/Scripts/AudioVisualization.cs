@@ -9,8 +9,10 @@ public class AudioVisualization : MonoBehaviour
         Mic,
         AudioClip
     }
+    [HideInInspector]
     public AudioClip clip;
     public Mode mode = Mode.AudioClip;
+    [HideInInspector]
     public AudioSource audioSource;
 
     public static float volume;

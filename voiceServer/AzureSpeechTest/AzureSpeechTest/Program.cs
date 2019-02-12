@@ -19,9 +19,45 @@ namespace AzureSpeechTest
         public string content;
     }
 
+    public enum Emotion
+    {
+        Natual = 0,
+        Smile,
+        Sad,
+
+        Total
+    }
+
     public class ReturnContent
     {
         public string response;
+        public string emotion;
+        public int confidence;
+
+        public static byte[] ToByte(ReturnContent _content)
+        {
+            byte[] resByte = Encoding.UTF8.GetBytes(_content.response);
+            Emotion emo = Emotion.Total;
+            if (_content.emotion == "natural")
+                emo = Emotion.Natual;
+            else if (_content.emotion == "happy")
+                emo = Emotion.Smile;
+            else if (_content.emotion == "sad")
+                emo = Emotion.Sad;
+            byte[] emoByte = BitConverter.GetBytes((int)emo);
+            byte[] confByte = BitConverter.GetBytes((int)_content.confidence);
+
+            byte[] total = new byte[sizeof(int) + resByte.Length + emoByte.Length + confByte.Length];
+            MemoryStream ms = new MemoryStream();
+            ms.Write(BitConverter.GetBytes(resByte.Length), 0, sizeof(int));
+            ms.Write(resByte, 0, resByte.Length);
+            ms.Write(emoByte, 0, emoByte.Length);
+            ms.Write(confByte, 0, confByte.Length);
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.Read(total, 0, total.Length);
+            ms.Close();
+            return total;
+        }
     }
 
     public class TextToUnity
@@ -36,7 +72,7 @@ namespace AzureSpeechTest
         static string recognizedByTheVoice;
         static string accessToken;
         static NetworkLayer network;
-
+        static ReturnContent returnContent;
         static string backendUrl = @"http://localhost:5000/listen";
 
         static NetworkModule netowrkModule;
@@ -62,28 +98,45 @@ namespace AzureSpeechTest
                     //FileStream fs = File.Open("voice.wav", FileMode.Open);
                     //SendStreamToUnity(fs);
                     //fs.Close();
+                    string cmd = Encoding.ASCII.GetString(b);
+                    if (cmd == "PlayerTalking")
+                    {
+                        RecognitionWithMicrophoneAsync().Wait();
+
+                        if (string.IsNullOrEmpty(recognizedByMS))
+                            return;
+                        SpeechContent c = new SpeechContent() { content = recognizedByMS };
+                        string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+                        string retJson = network.PostJson(backendUrl, json);
+                        Console.WriteLine("Json from backend = " + retJson);
+                        returnContent = JsonConvert.DeserializeObject<ReturnContent>(retJson);
+                        recognizedByTheVoice = returnContent.response;
+                        StartTTS();
+                    }
+                    else
+                        Console.WriteLine("Unkown param:" + cmd);
                 };
 
                 // initiazize
                 AuthTTS();
 
-                do
-                {
-                    RecognitionWithMicrophoneAsync().Wait();
+                //do
+                //{
+                //    RecognitionWithMicrophoneAsync().Wait();
 
-                    if (string.IsNullOrEmpty(recognizedByMS))
-                        continue;
-                    SpeechContent c = new SpeechContent() { content = recognizedByMS };
-                    string json = JsonConvert.SerializeObject(c, Formatting.Indented);
-                    string retJson = network.PostJson(backendUrl, json);
-                    Console.WriteLine("Json from backend = " + retJson);
-                    ReturnContent ret = JsonConvert.DeserializeObject<ReturnContent>(retJson);
-                    recognizedByTheVoice = ret.response;
-                    StartTTS();
+                //    if (string.IsNullOrEmpty(recognizedByMS))
+                //        continue;
+                //    SpeechContent c = new SpeechContent() { content = recognizedByMS };
+                //    string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+                //    string retJson = network.PostJson(backendUrl, json);
+                //    Console.WriteLine("Json from backend = " + retJson);
+                //    ReturnContent ret = JsonConvert.DeserializeObject<ReturnContent>(retJson);
+                //    recognizedByTheVoice = ret.response;
+                //    StartTTS();
 
-                    Console.ReadKey();
+                //    Console.ReadKey();
 
-                } while (true);
+                //} while (true);
             }
             catch (Exception e)
             {
@@ -195,8 +248,17 @@ namespace AzureSpeechTest
 
         static void SendStreamToUnity(Stream _stream)
         {
+            // perpare stream
             MemoryStream ms = new MemoryStream();
+            // write command id = 1
+            ms.Write(BitConverter.GetBytes(1), 0, sizeof(int));
+            // write emotion info
+            byte[] retB = ReturnContent.ToByte(returnContent);
+            ms.Write(retB, 0, retB.Length);
+            // write voice
             _stream.CopyTo(ms);
+
+            // read
             byte[] buffer = new byte[ms.Length];
             ms.Seek(0, SeekOrigin.Begin);
             ms.Read(buffer, 0, buffer.Length);

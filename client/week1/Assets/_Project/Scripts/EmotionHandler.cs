@@ -20,6 +20,7 @@ public class EmotionHandler : MonoBehaviour {
         Total
     }
     public Emotion emotion = Emotion.Natual;
+
     Vector3 oriLeft;
     Vector3 oriRight;
     // Use this for initialization
@@ -29,7 +30,7 @@ public class EmotionHandler : MonoBehaviour {
         oriRight = mouthCornerRight.localPosition;
 
         ChangeState(Emotion.Natual);
-        InvokeRepeating("PeriodlyChange", 1f, 1f);
+        //InvokeRepeating("PeriodlyChange", 1f, 1f);
 	}
 
     void PeriodlyChange()
@@ -40,7 +41,7 @@ public class EmotionHandler : MonoBehaviour {
         ChangeState((Emotion)next);
     }
 
-    void ChangeState(Emotion _emo)
+    public void ChangeState(Emotion _emo, float _confidence=100)
     {
         emotion = _emo;
         switch (emotion)
@@ -53,14 +54,14 @@ public class EmotionHandler : MonoBehaviour {
                 break;
             case Emotion.Smile:
                 {
-                    targetLeft = new Vector3(oriLeft.x, oriLeft.y, smileZ);
-                    targetRight = new Vector3(oriRight.x, oriRight.y, smileZ);
+                    targetLeft = new Vector3(oriLeft.x, oriLeft.y, natualZ - (natualZ - smileZ) * (_confidence / 100f));
+                    targetRight = new Vector3(oriRight.x, oriRight.y, natualZ - (natualZ - smileZ) * (_confidence / 100f));
                 }
                 break;
             case Emotion.Sad:
                 {
-                    targetLeft = new Vector3(oriLeft.x, oriLeft.y, sadZ);
-                    targetRight = new Vector3(oriRight.x, oriRight.y, sadZ);
+                    targetLeft = new Vector3(oriLeft.x, oriLeft.y, natualZ + (natualZ - sadZ) * (_confidence / 100f));
+                    targetRight = new Vector3(oriRight.x, oriRight.y, natualZ + (natualZ - sadZ) * (_confidence / 100f));
                 }
                 break;
         }

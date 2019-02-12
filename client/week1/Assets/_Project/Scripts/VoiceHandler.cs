@@ -4,14 +4,18 @@ using UnityEngine;
 using ShuoScripts;
 using System;
 using System.IO;
+using System.Text;
 
 public class VoiceHandler : MonoBehaviour {
 
     public NetworkModule networkModule;
     public AudioSource audioSource;
     public AudioVisualization audioVis;
-	// Use this for initialization
-	void Start ()
+    public EmotionHandler emotionHandler;
+    public MicrophoneHandler micHandler;
+
+    // Use this for initialization
+    void Start ()
     {
         if (audioVis == null)
         {
@@ -26,14 +30,44 @@ public class VoiceHandler : MonoBehaviour {
             if (b == null || b.Length == 0)
                 return;
 
+            // read command
+            MemoryStream ms = new MemoryStream(b);
+            byte[] cmdB = new byte[sizeof(int)];
+            ms.Read(cmdB, 0, cmdB.Length);
+            int cmd = BitConverter.ToInt32(cmdB, 0);
+            if (cmd == 1)
+            {
+                micHandler.EndTalk();
 
-            //float[] voice = wav.LeftChannel;
-            //AudioClip clip = AudioClip.Create("voice", voice.Length, 1, 44100, false);
-            //clip.SetData(voice, 0);
-            audioSource.clip = WavUtility.ToAudioClip(b);
-            audioSource.Play();
-            audioVis.clip = audioSource.clip;
-            //File.WriteAllBytes(Application.streamingAssetsPath+"/voice.wav", b);
+                byte[] respLen = new byte[sizeof(int)];
+                ms.Read(respLen, 0, respLen.Length);
+                byte[] respByte = new byte[BitConverter.ToInt32(respLen, 0)];
+                ms.Read(respByte, 0, BitConverter.ToInt32(respLen, 0));
+                byte[] emoByte = new byte[sizeof(int)];
+                ms.Read(emoByte, 0, emoByte.Length);
+                int emotion = BitConverter.ToInt32(emoByte, 0);
+                byte[] confByte = new byte[sizeof(int)];
+                ms.Read(confByte, 0, confByte.Length);
+                int confidence = BitConverter.ToInt32(confByte, 0);
+
+                // display subtitle
+                Debug.Log("Girl: " + Encoding.UTF8.GetString(respByte) + " Emotion:" + emotion + " Confidence:" + confidence);
+
+                // perform emotion
+                //emotionHandler.ChangeState((EmotionHandler.Emotion)emotion, confidence);
+                emotionHandler.ChangeState((EmotionHandler.Emotion.Smile), 100);
+
+                // play audio
+                byte[] voiceByte = new byte[ms.Length - ms.Position];
+                ms.Read(voiceByte, 0, voiceByte.Length);
+                audioSource.clip = WavUtility.ToAudioClip(voiceByte);
+                audioSource.Play();
+                audioVis.clip = audioSource.clip;
+            }
+            else
+                Debug.LogError("Unknow Command:" + cmd);
+
+
         };
     }
 

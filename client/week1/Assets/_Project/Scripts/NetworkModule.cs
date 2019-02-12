@@ -115,6 +115,8 @@ namespace ShuoScripts
 #if UNITY_EDITOR
                         Debug.Log("+++ sizeInt" + sizeInt);
 #endif
+                        if (sizeInt == 0)
+                            continue;
                         dataRecv = new byte[sizeInt];
                         clientStream.Read(dataRecv, 0, sizeInt);
                     }
