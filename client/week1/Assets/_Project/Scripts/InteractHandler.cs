@@ -12,7 +12,8 @@ public class InteractHandler : MonoBehaviour {
     /// <summary>
     /// girl hand
     /// </summary>
-    public Transform girlHand;
+    public Transform girlHandLeft;
+    public Transform girlHandRight;
 
     /// <summary>
     /// girl look at
@@ -22,12 +23,14 @@ public class InteractHandler : MonoBehaviour {
     /// <summary>
     /// girl hand target
     /// </summary>
-    public Transform handTarget;
+    public Transform handTargetLeft;
+    public Transform handTargetRight;
 
     public Transform microphone;
 
     public Transform playerHead;
-    public Transform playerHand;
+    public Transform playerHandLeft;
+    public Transform playerHandRight;
 
     public float headThreshold = 10f;
     public float handThreshold = 0.2f;
@@ -36,7 +39,8 @@ public class InteractHandler : MonoBehaviour {
     public float handSpeed = 2f;
 
     Vector3 headOriPos;
-    Vector3 handOriPos;
+    Vector3 handOriPosLeft;
+    Vector3 handOriPosRight;
 
     public float mcActiveDistance = 0.25f;
 
@@ -46,15 +50,17 @@ public class InteractHandler : MonoBehaviour {
     void Start ()
     {
         headOriPos = aimTarget.position;
-        handOriPos = handTarget.position;
+        handOriPosLeft = handTargetLeft.position;
+        handOriPosRight = handTargetRight.position;
 
         aimTarget.GetComponent<MeshRenderer>().enabled = false;
-        handTarget.GetComponent<MeshRenderer>().enabled = false;
+        handTargetLeft.GetComponent<MeshRenderer>().enabled = false;
+        handTargetRight.GetComponent<MeshRenderer>().enabled = false;
 
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update ()
     {
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);
@@ -77,14 +83,44 @@ public class InteractHandler : MonoBehaviour {
 
 
         // hand
-        float handDis = Vector3.Distance(playerHand.position, girlHand.position);
+        float handDis = Vector3.Distance(playerHandLeft.position, girlHandLeft.position);
         if (handDis < handThreshold)
         {
-            handTarget.position = Vector3.Lerp(handTarget.position, playerHand.position, Time.deltaTime * handSpeed);
+            handTargetLeft.position = Vector3.Lerp(handTargetLeft.position, playerHandLeft.position, Time.deltaTime * handSpeed);
         }
         else
         {
-            handTarget.position = Vector3.Lerp(handTarget.position, handOriPos, Time.deltaTime * handSpeed);
+            handTargetLeft.position = Vector3.Lerp(handTargetLeft.position, handOriPosLeft, Time.deltaTime * handSpeed);
+        }
+
+        handDis = Vector3.Distance(playerHandLeft.position, girlHandRight.position);
+        if (handDis < handThreshold)
+        {
+            handTargetRight.position = Vector3.Lerp(handTargetRight.position, playerHandLeft.position, Time.deltaTime * handSpeed);
+        }
+        else
+        {
+            handTargetRight.position = Vector3.Lerp(handTargetRight.position, handOriPosRight, Time.deltaTime * handSpeed);
+        }
+
+        handDis = Vector3.Distance(playerHandRight.position, girlHandLeft.position);
+        if (handDis < handThreshold)
+        {
+            handTargetLeft.position = Vector3.Lerp(handTargetLeft.position, playerHandRight.position, Time.deltaTime * handSpeed);
+        }
+        else
+        {
+            handTargetLeft.position = Vector3.Lerp(handTargetLeft.position, handOriPosLeft, Time.deltaTime * handSpeed);
+        }
+
+        handDis = Vector3.Distance(playerHandRight.position, girlHandRight.position);
+        if (handDis < handThreshold)
+        {
+            handTargetRight.position = Vector3.Lerp(handTargetRight.position, playerHandRight.position, Time.deltaTime * handSpeed);
+        }
+        else
+        {
+            handTargetRight.position = Vector3.Lerp(handTargetRight.position, handOriPosRight, Time.deltaTime * handSpeed);
         }
 
         // microphone

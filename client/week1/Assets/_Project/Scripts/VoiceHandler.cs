@@ -54,8 +54,8 @@ public class VoiceHandler : MonoBehaviour {
                 Debug.Log("Girl: " + Encoding.UTF8.GetString(respByte) + " Emotion:" + emotion + " Confidence:" + confidence);
 
                 // perform emotion
-                //emotionHandler.ChangeState((EmotionHandler.Emotion)emotion, confidence);
-                emotionHandler.ChangeState((EmotionHandler.Emotion.Smile), 100);
+                emotionHandler.ChangeState((EmotionHandler.Emotion)emotion, confidence);
+                //emotionHandler.ChangeState((EmotionHandler.Emotion.Smile), 100);
 
                 // play audio
                 byte[] voiceByte = new byte[ms.Length - ms.Position];
