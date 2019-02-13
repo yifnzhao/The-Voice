@@ -4,6 +4,7 @@
 # The Voice : Stub to predict emotion from a text input.
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
+import re
 from random import randint
 
 class emotion:
@@ -15,8 +16,11 @@ class emotion:
 	#  Predict the emotion of a text as happy, sad or natural.
 	#----------------------------------------------------------------------
 	def predict(self,str):
-
+		# Default prediction.
 		prediction = {"emotion": "natural", "confidence": 100}
+
+		# Remove any punctuation.
+		str = re.sub(r'[^\w\s]','',str)
 
 		# Lowercase and break string into individual words
 		potential_emotion_words = str.lower().split()

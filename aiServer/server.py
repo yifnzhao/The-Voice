@@ -45,7 +45,7 @@ def listen():
 	response = {
 		"response"   : response,
 		"emotion"    : emotion_paramaters["emotion"],
-		"confidence" : emotion_paramaters["confidence"]		
+		"confidence" : emotion_paramaters["confidence"]
 	}
 	return jsonify(response)  
 
