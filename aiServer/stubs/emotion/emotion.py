@@ -19,8 +19,8 @@ class emotion:
 		# Default prediction.
 		prediction = {"emotion": "natural", "confidence": 100}
 
-		# Remove any punctuation.
-		str = re.sub(r'[^\w\s]','',str)
+		# Replace any punctuation with space.
+		str = re.sub(r'[^\w\s]',' ',str)
 
 		# Lowercase and break string into individual words
 		potential_emotion_words = str.lower().split()
