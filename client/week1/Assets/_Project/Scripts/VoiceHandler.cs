@@ -13,10 +13,12 @@ public class VoiceHandler : MonoBehaviour {
     public AudioVisualization audioVis;
     public EmotionHandler emotionHandler;
     public MicrophoneHandler micHandler;
-
+    public TextMesh subtitle;
     // Use this for initialization
     void Start ()
     {
+        subtitle.text = "";
+
         if (audioVis == null)
         {
             Debug.LogError("No AudioVisualization");
@@ -51,7 +53,10 @@ public class VoiceHandler : MonoBehaviour {
                 int confidence = BitConverter.ToInt32(confByte, 0);
 
                 // display subtitle
-                Debug.Log("Girl: " + Encoding.UTF8.GetString(respByte) + " Emotion:" + emotion + " Confidence:" + confidence);
+                string text = Encoding.UTF8.GetString(respByte);
+                Debug.Log("Girl: " + text + " Emotion:" + emotion + " Confidence:" + confidence);
+                subtitle.text = text;
+                Invoke("CleanSubtitle", 5f);
 
                 // perform emotion
                 emotionHandler.ChangeState((EmotionHandler.Emotion)emotion, confidence);
@@ -69,6 +74,11 @@ public class VoiceHandler : MonoBehaviour {
 
 
         };
+    }
+
+    void CleanSubtitle()
+    {
+        subtitle.text = "";
     }
 
     private float[] ConvertByteToFloat(byte[] array)
