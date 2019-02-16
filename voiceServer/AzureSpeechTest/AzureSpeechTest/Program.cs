@@ -16,7 +16,7 @@ namespace AzureSpeechTest
 
     public class SpeechContent
     {
-        public int pitch;
+        public float pitch;
         public string content;
     }
 
@@ -91,22 +91,28 @@ namespace AzureSpeechTest
                 netowrkModule.Recv();
                 netowrkModule.Output += (b) =>
                 {
+                    MemoryStream ms = new MemoryStream(b);
+                    byte[] cmdB = new byte[sizeof(Int32)];
+                    ms.Read(cmdB, 0, sizeof(Int32));
+                    int cmd = BitConverter.ToInt32(cmdB, 0);
                     Console.WriteLine(Encoding.ASCII.GetString(b));
 
-                    //string str = "backStrbackStrbackStrbackStrbackStr";
-                    //netowrkModule.Send(Encoding.ASCII.GetBytes(str));
-
-                    //FileStream fs = File.Open("voice.wav", FileMode.Open);
-                    //SendStreamToUnity(fs);
-                    //fs.Close();
-                    string cmd = Encoding.ASCII.GetString(b);
-                    if (cmd == "PlayerTalking")
+                    //"PlayerTalking"
+                    if (cmd == 1000)
                     {
                         RecognitionWithMicrophoneAsync().Wait();
 
                         if (string.IsNullOrEmpty(recognizedByMS))
                             return;
-                        SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = 0 };
+
+                        SendPitchRequestToUnity();
+                    }
+                    else if (cmd == 1001)
+                    {
+                        byte[] pitchB = new byte[sizeof(float)];
+                        ms.Read(pitchB, 0, sizeof(float));
+                        float pitch = BitConverter.ToSingle(pitchB, 0);
+                        SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = pitch };
                         string json = JsonConvert.SerializeObject(c, Formatting.Indented);
                         string retJson = network.PostJson(backendUrl, json);
                         Console.WriteLine("Json from backend = " + retJson);
@@ -116,6 +122,8 @@ namespace AzureSpeechTest
                     }
                     else
                         Console.WriteLine("Unkown param:" + cmd);
+
+                    ms.Close();
                 };
 
                 // initiazize
@@ -258,6 +266,21 @@ namespace AzureSpeechTest
             ms.Write(retB, 0, retB.Length);
             // write voice
             _stream.CopyTo(ms);
+
+            // read
+            byte[] buffer = new byte[ms.Length];
+            ms.Seek(0, SeekOrigin.Begin);
+            ms.Read(buffer, 0, buffer.Length);
+            netowrkModule.Send(buffer);
+            ms.Close();
+        }
+
+        static void SendPitchRequestToUnity()
+        {
+            // perpare stream
+            MemoryStream ms = new MemoryStream();
+            // write command id = 2
+            ms.Write(BitConverter.GetBytes(2), 0, sizeof(int));
 
             // read
             byte[] buffer = new byte[ms.Length];

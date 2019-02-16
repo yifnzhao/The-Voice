@@ -14,6 +14,7 @@ public class VoiceHandler : MonoBehaviour {
     public EmotionHandler emotionHandler;
     public MicrophoneHandler micHandler;
     public TextMesh subtitle;
+    public MicSampler micSampler;
     // Use this for initialization
     void Start ()
     {
@@ -69,9 +70,23 @@ public class VoiceHandler : MonoBehaviour {
                 audioSource.Play();
                 audioVis.clip = audioSource.clip;
             }
+            else if (cmd == 2)  // request mic pitch
+            {
+                micSampler.EndSampling();
+                float pitch = micSampler.GetHighestPitch();
+                MemoryStream sendms = new MemoryStream();
+                sendms.Write(BitConverter.GetBytes(1001), 0, sizeof(Int32));
+                sendms.Write(BitConverter.GetBytes(pitch), 0, sizeof(float));
+
+                byte[] sent = new byte[sendms.Length];
+                sendms.Seek(0, SeekOrigin.Begin);
+                sendms.Read(sent, 0, (int)sendms.Length);
+                networkModule.Send(sent);
+            }
             else
                 Debug.LogError("Unknow Command:" + cmd);
 
+            ms.Close();
 
         };
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class MicrophoneHandler : MonoBehaviour {
     public GameObject bgLight;
     public GameObject indicator;
     public ShuoScripts.NetworkModule network;
+    public MicSampler micSampler;
 
     // Use this for initialization
     void Start () {
@@ -29,8 +31,9 @@ public class MicrophoneHandler : MonoBehaviour {
 
     void Enter_SwitchOn()
     {
-        string str = "PlayerTalking";
-        network.Send(Encoding.ASCII.GetBytes(str));
+        // PlayerTalk
+        network.Send(BitConverter.GetBytes(1000));
+        micSampler.StartSampling();
 
         // turn indicator green
         bgLight.GetComponent<Light>().color = Color.green;
