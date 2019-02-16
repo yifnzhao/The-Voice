@@ -33,10 +33,10 @@ public class InteractHandler : MonoBehaviour {
     public Transform playerHandRight;
 
     public float headThreshold = 10f;
-    public float handThreshold = 0.2f;
+    float handThreshold = 0.2f;
 
     public float headSpeed = 2f;
-    public float handSpeed = 2f;
+    float handSpeed = 2f;
 
     Vector3 headOriPos;
     Vector3 handOriPosLeft;
@@ -45,6 +45,12 @@ public class InteractHandler : MonoBehaviour {
     public float mcActiveDistance = 0.25f;
 
     public EyeControl eyeContorl;
+
+    public Animator animator;
+
+    public float closeRange = 2f;
+    public float mediumRange = 5f;
+    public float farRange = 10f;
 
     // Use this for initialization
     void Start ()
@@ -58,10 +64,72 @@ public class InteractHandler : MonoBehaviour {
         handTargetRight.GetComponent<MeshRenderer>().enabled = false;
 
     }
+    bool enterCloseRange = false;
+    bool enterMediumRange = false;
+    bool enterFarRange = false;
+    void Enter_CloseRange()
+    {
+        if (!enterCloseRange)
+        {
+            Debug.Log("Enter_CloseRange");
+            animator.SetTrigger("shakehand");
+
+            enterCloseRange = true;
+        }
+    }
+    void Enter_MediumRange()
+    {
+        if (!enterMediumRange)
+        {
+            Debug.Log("Enter_MediumRange");
+
+            enterMediumRange = true;
+        }
+    }
+
+    void Enter_FarRange()
+    {
+        if (!enterFarRange)
+        {
+            Debug.Log("Enter_FarRange");
+
+            enterFarRange = true;
+        }
+    }
+
+
+
+    void Update_Range()
+    {
+        float range = Vector3.Distance(playerHead.position, girlHead.position);
+        //Debug.Log("range:" + range);
+        if (range < closeRange)
+        {
+            Enter_CloseRange();
+            enterMediumRange = false;
+            enterFarRange = false;
+        }
+        else if (range > closeRange && range < mediumRange)
+        {
+            Enter_MediumRange();
+            enterCloseRange = false;
+            enterFarRange = false;
+        }
+        else if (range > mediumRange && range < farRange)
+        {
+            Enter_FarRange();
+            enterCloseRange = false;
+            enterMediumRange = false;
+
+        }
+        else { }
+    }
 
     // Update is called once per frame
     void Update ()
     {
+        Update_Range();
+
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);
         if (headDis < headThreshold)

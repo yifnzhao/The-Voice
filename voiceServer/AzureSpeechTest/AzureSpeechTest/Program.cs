@@ -285,6 +285,7 @@ namespace AzureSpeechTest
             var config = SpeechConfig.FromSubscription("d51c2ff78636458d91821ab43b7219d7", "westus");
 
             // Creates a speech recognizer using microphone as audio input.
+            // SpeechRecognizer constructor without params for microphone
             using (var recognizer = new SpeechRecognizer(config))
             {
                 // Starts recognizing.
