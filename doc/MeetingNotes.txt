@@ -1,0 +1,33 @@
+2019-2-14
+Add animation when player stay far or close to character
+Detect input volume from player to enlarge emotion performance.
+Detter responses with hahaha
+
+2019-2-7
+Player use microphone to active voice recognation with distance from mic to mouth.
+Use volume and pitch to recognize emotions, combined recognized text content, to decide what's the final expression.
+Use keyword and context to decide what emotion should use, every keyword have weights, to decide how much should perform on happy and sad faces.
+Gaze on player when close.
+Different animations by distance from player, have talk animation.
+
+2019-2-2
+Add ik for head and arm movement
+Hold her left hand to active voice recognition
+Transfer voice volume stream to open her mouth
+
+2019-1-31
+Recast AI
+
+2019-1-12
+ubisoft world
+XR:MTL
+
+Kickoff Jan 12th 
+Alpha Feb 14th
+Beta March 14th
+Gold April 18th
+
+Olivier Palmieri
+Anthony Kozak
+
+Tuesday Thusday
