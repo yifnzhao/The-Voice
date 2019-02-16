@@ -15,7 +15,7 @@ class emotion:
 	#----------------------------------------------------------------------
 	#  Predict the emotion of a text as happy, sad or natural.
 	#----------------------------------------------------------------------
-	def predict(self,str):
+	def predict(self,str,pitch):
 		# Default prediction.
 		prediction = {"emotion": "natural", "confidence": 100}
 
@@ -29,10 +29,12 @@ class emotion:
 		if any(s in self.happy_synonym for s in potential_emotion_words):
 			prediction["emotion"] = "happy"
 			# For now return random value.
-			prediction["confidence"] = randint(0, 100)
+			#prediction["confidence"] = randint(0, 100)
 		# Detect if Sad
 		elif any(s in self.sad_synonym for s in potential_emotion_words):
 			prediction["emotion"] = "sad"
-			prediction["confidence"] = randint(0, 100)
+			#prediction["confidence"] = randint(0, 100)
+
+		prediction["confidence"] = pitch * 100
 
 		return prediction
