@@ -71,9 +71,10 @@ public class InteractHandler : MonoBehaviour {
     {
         if (!enterCloseRange)
         {
-            Debug.Log("Enter_CloseRange");
-            animator.SetTrigger("shakehand");
-
+            //Debug.Log("Enter_CloseRange");
+            animator.SetBool("shakehand", true);
+            animator.SetBool("stand", false);
+            animator.SetBool("sit", false);
             enterCloseRange = true;
         }
     }
@@ -81,8 +82,10 @@ public class InteractHandler : MonoBehaviour {
     {
         if (!enterMediumRange)
         {
-            Debug.Log("Enter_MediumRange");
-
+            //Debug.Log("Enter_MediumRange");
+            animator.SetBool("stand", true);
+            animator.SetBool("shakehand", false);
+            animator.SetBool("sit", false);
             enterMediumRange = true;
         }
     }
@@ -91,7 +94,10 @@ public class InteractHandler : MonoBehaviour {
     {
         if (!enterFarRange)
         {
-            Debug.Log("Enter_FarRange");
+            //Debug.Log("Enter_FarRange");
+            animator.SetBool("sit", true);
+            animator.SetBool("shakehand", false);
+            animator.SetBool("stand", false);
 
             enterFarRange = true;
         }

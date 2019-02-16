@@ -16,6 +16,7 @@ namespace AzureSpeechTest
 
     public class SpeechContent
     {
+        public int pitch;
         public string content;
     }
 
@@ -105,7 +106,7 @@ namespace AzureSpeechTest
 
                         if (string.IsNullOrEmpty(recognizedByMS))
                             return;
-                        SpeechContent c = new SpeechContent() { content = recognizedByMS };
+                        SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = 0 };
                         string json = JsonConvert.SerializeObject(c, Formatting.Indented);
                         string retJson = network.PostJson(backendUrl, json);
                         Console.WriteLine("Json from backend = " + retJson);

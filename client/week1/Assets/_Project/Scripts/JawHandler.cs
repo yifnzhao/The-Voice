@@ -6,6 +6,7 @@ public class JawHandler : MonoBehaviour {
 
     public Transform jawBone;
     public float speed = 10f;
+    public AudioVisualization audioVisualization;
 
     float naturalPos = 0.0536f;
     float openPos = 0.064f;
@@ -22,7 +23,7 @@ public class JawHandler : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        Update_Jaw(AudioVisualization.volume);
+        Update_Jaw(audioVisualization.volume);
     }
 
     /// <summary>

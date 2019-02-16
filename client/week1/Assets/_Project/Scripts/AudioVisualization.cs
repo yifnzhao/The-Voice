@@ -15,7 +15,7 @@ public class AudioVisualization : MonoBehaviour
     [HideInInspector]
     public AudioSource audioSource;
 
-    public static float volume;
+    public float volume;
     private AudioClip micRecord;
     string device;
     const int CLIP_LENGTH = 128;
@@ -46,12 +46,13 @@ public class AudioVisualization : MonoBehaviour
     float GetMaxVolume()
     {
         float maxVolume = 0f;
-        if (audioSource == null || clip == null)
-        {
-            return 0;
-        }
+
         if (mode == Mode.AudioClip)
         {
+            if (audioSource == null || clip == null)
+            {
+                return 0;
+            }
             int offset = (int)(audioSource.time * clip.frequency);
             if (offset < 0)
             {
