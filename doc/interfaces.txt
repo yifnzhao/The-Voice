@@ -1,0 +1,13 @@
+------------VoiceServer To AIServer------------
+// data format:
+// pitch is float, from 0 ~ 1
+// content is string in utf8;
+json={"pitch"=0, "content"="talk"}
+
+
+------------AIServer To VoiceServer------------
+// data format
+// response is string in utf8
+// emotion is predefined string, use "natural", "happy", "sad"
+// confidence is interger from 0 to 100
+json = {"response"="response", "emotion"="natural", "confidence"=0}
