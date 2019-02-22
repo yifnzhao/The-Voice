@@ -5,6 +5,7 @@
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
 import json
+import codecs
 import requests
 import logging
 #logging.basicConfig(level=logging.CRITICAL)
@@ -31,11 +32,13 @@ def root():
 @app.route('/listen', methods=['POST'])
 def listen():
 	try:
-		json_response = json.loads(request.get_data().decode('utf8'))
+		print("------- new message --------")
+		json_response = json.loads(request.get_data().decode('utf-8-sig'))
 		print("Received: " + str(json_response))
 		query = json_response['content']
 		pitch = float(json_response['pitch'])
 	except Exception:
+		print("Some Exception");
 		return jsonify({"response" : "Bad request!"}), 400
 
 	# Default response.
