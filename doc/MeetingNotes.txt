@@ -1,7 +1,16 @@
+2019-2-21
+add conversation hint
+add talking status indicator
+add learning feature
+maybe change another bigger dataset
+remove long sentences
+voice service unauthonrized problem
+make girl walk
+
 2019-2-14
 Add animation when player stay far or close to character
 Detect input volume from player to enlarge emotion performance.
-Detter responses with hahaha
+Better responses with hahaha
 
 2019-2-7
 Player use microphone to active voice recognation with distance from mic to mouth.

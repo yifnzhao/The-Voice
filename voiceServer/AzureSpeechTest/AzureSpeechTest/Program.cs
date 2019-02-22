@@ -16,8 +16,8 @@ namespace AzureSpeechTest
 
     public class SpeechContent
     {
-        public float pitch;
         public string content;
+        public float pitch;
     }
 
     public enum Emotion
@@ -33,7 +33,7 @@ namespace AzureSpeechTest
     {
         public string response;
         public string emotion;
-        public int confidence;
+        public float confidence;
 
         public static byte[] ToByte(ReturnContent _content)
         {
@@ -46,7 +46,7 @@ namespace AzureSpeechTest
             else if (_content.emotion == "sad")
                 emo = Emotion.Sad;
             byte[] emoByte = BitConverter.GetBytes((int)emo);
-            byte[] confByte = BitConverter.GetBytes((int)_content.confidence);
+            byte[] confByte = BitConverter.GetBytes((float)_content.confidence);
 
             byte[] total = new byte[sizeof(int) + resByte.Length + emoByte.Length + confByte.Length];
             MemoryStream ms = new MemoryStream();
@@ -113,8 +113,13 @@ namespace AzureSpeechTest
                         ms.Read(pitchB, 0, sizeof(float));
                         float pitch = BitConverter.ToSingle(pitchB, 0);
                         SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = pitch };
-                        string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+                        string json = JsonConvert.SerializeObject(c, Formatting.None);
                         string retJson = network.PostJson(backendUrl, json);
+                        if (string.IsNullOrEmpty(retJson))
+                        {
+                            Console.WriteLine("Json from backend is empty!");
+                            return;
+                        }
                         Console.WriteLine("Json from backend = " + retJson);
                         returnContent = JsonConvert.DeserializeObject<ReturnContent>(retJson);
                         recognizedByTheVoice = returnContent.response;

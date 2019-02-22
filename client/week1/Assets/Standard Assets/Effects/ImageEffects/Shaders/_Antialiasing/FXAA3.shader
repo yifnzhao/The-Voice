@@ -8,13 +8,14 @@ Properties {
 SubShader {
 	Pass {
 		ZTest Always Cull Off ZWrite Off
+		Fog { Mode off }
 
 CGPROGRAM
-
-#pragma vertex vert
+#pragma vertex vert 
 #pragma fragment frag
 #include "UnityCG.cginc"
 #pragma target 3.0
+#pragma glsl
 
 #define FXAA_HLSL_3 1
 
@@ -176,9 +177,9 @@ v2f vert (appdata_img v)
 
 sampler2D _MainTex;
 
-float4 frag (v2f i) : SV_Target
+float4 frag (float4 uv : TEXCOORD0) : COLOR0
 {
-	return float4(FxaaPixelShader(i.uv, _MainTex, _MainTex_TexelSize.xy).xyz, 0.0f);
+	return float4(FxaaPixelShader(uv, _MainTex, _MainTex_TexelSize.xy).xyz, 0.0f);
 }
 	
 ENDCG

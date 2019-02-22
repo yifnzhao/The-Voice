@@ -51,7 +51,7 @@ public class VoiceHandler : MonoBehaviour {
                 int emotion = BitConverter.ToInt32(emoByte, 0);
                 byte[] confByte = new byte[sizeof(int)];
                 ms.Read(confByte, 0, confByte.Length);
-                int confidence = BitConverter.ToInt32(confByte, 0);
+                float confidence = BitConverter.ToSingle(confByte, 0);
 
                 // display subtitle
                 string text = Encoding.UTF8.GetString(respByte);
