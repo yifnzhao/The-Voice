@@ -11,13 +11,13 @@
 import time
 from timeout3 import timeout, TIMEOUT_EXCEPTION
 from chatterbot import ChatBot
-#from chatterbot.trainers import ChatterBotCorpusTrainer
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
 class chatterbot_facade:
 	def __init__(self):
 		self.chatbot = ChatBot('LearnBot')
-		#trainer = ChatterBotCorpusTrainer(self.chatbot)
-		#trainer.train("chatterbot.corpus.english")
+		trainer = ChatterBotCorpusTrainer(self.chatbot)
+		trainer.train("chatterbot.corpus.english")
 
 	#----------------------------------------------------------------------
 	#  Predict the emotion of a text as happy, sad or natural.

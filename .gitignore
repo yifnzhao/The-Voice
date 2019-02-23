@@ -2,6 +2,9 @@
 *.pyc
 *.csproj
 *.sln
+db.sqlite3
+db.sqlite3-shm
+db.sqlite3-wal
 /client/week1/Library
 /client/week1/Temp
 /voiceServer/AzureSpeechTest/AzureSpeechTest/obj

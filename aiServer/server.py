@@ -45,6 +45,7 @@ def listen():
 	response = "I could not understand!"
 
 	# Smart response.
+	# This is in progress...
 	try:
 		# Chatterbot response.
 		# This will time out and throw exception
@@ -58,6 +59,12 @@ def listen():
 
 	# Detect emotion.
 	emotion_paramaters = emotion_bot.predict(query,pitch)
+
+	# Shorten the answer limit to 256 characters if longer.
+	if len(response) > 256: 
+		# Get first 256 characters.
+		# We know just doing this might result with incomplate responses but it is ok for now.
+		response = response[:256]
 
 	response = {
 		"response"   : response,
