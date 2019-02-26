@@ -24,5 +24,6 @@ class chatterbot_facade:
 	#----------------------------------------------------------------------
 	@timeout(5)
 	def respond(self,str):
-		response = self.chatbot.get_response(str).text
+		response = self.chatbot.get_response(str, search_text=str).text
+		#response = self.chatbot.get_response(str).text
 		return response
