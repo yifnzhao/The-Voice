@@ -52,6 +52,17 @@ public class InteractHandler : MonoBehaviour {
     public float mediumRange = 5f;
     public float farRange = 10f;
 
+    /// <summary>
+    /// follow play until distance less than this
+    /// </summary>
+    public float followStopDistance = 1;
+
+    public float walkSpeed = 1f;
+
+    public AnimationHandler animHandler;
+
+    public float turnSpeed = 200f;
+
     // Use this for initialization
     void Start ()
     {
@@ -72,9 +83,9 @@ public class InteractHandler : MonoBehaviour {
         if (!enterCloseRange)
         {
             //Debug.Log("Enter_CloseRange");
-            animator.SetBool("shakehand", true);
-            animator.SetBool("stand", false);
-            animator.SetBool("sit", false);
+            //animator.SetBool("shakehand", true);
+            //animator.SetBool("stand", false);
+            //animator.SetBool("sit", false);
             enterCloseRange = true;
         }
     }
@@ -83,9 +94,9 @@ public class InteractHandler : MonoBehaviour {
         if (!enterMediumRange)
         {
             //Debug.Log("Enter_MediumRange");
-            animator.SetBool("stand", true);
-            animator.SetBool("shakehand", false);
-            animator.SetBool("sit", false);
+            //animator.SetBool("stand", true);
+            //animator.SetBool("shakehand", false);
+            //animator.SetBool("sit", false);
             enterMediumRange = true;
         }
     }
@@ -95,9 +106,9 @@ public class InteractHandler : MonoBehaviour {
         if (!enterFarRange)
         {
             //Debug.Log("Enter_FarRange");
-            animator.SetBool("sit", true);
-            animator.SetBool("shakehand", false);
-            animator.SetBool("stand", false);
+            //animator.SetBool("sit", true); 
+            //animator.SetBool("shakehand", false);
+            //animator.SetBool("stand", false);
 
             enterFarRange = true;
         }
@@ -131,10 +142,38 @@ public class InteractHandler : MonoBehaviour {
         else { }
     }
 
+    void Update_Follow()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float dis = Vector3.Distance(from, to);
+        if (dis > followStopDistance)
+        {
+            yifan.transform.position = Vector3.Lerp(from, to, Time.deltaTime * walkSpeed);
+            animHandler.ChangeState(AnimationHandler.Anim.Walk);
+        }
+        else
+            animHandler.ChangeState(AnimationHandler.Anim.Idle);
+
+        float angle = Vector3.Angle(yifan.transform.forward, to - from);
+        if (angle > 5)
+        {
+            // check normal direction to determine trun diretion
+            Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
+            if(normal.y > 0)
+                yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
+            else
+                yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
+        }
+    }
+
     // Update is called once per frame
     void Update ()
     {
         Update_Range();
+        Update_Follow();
 
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);
