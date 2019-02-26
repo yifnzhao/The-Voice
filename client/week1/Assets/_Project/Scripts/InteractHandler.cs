@@ -52,11 +52,6 @@ public class InteractHandler : MonoBehaviour {
     public float mediumRange = 5f;
     public float farRange = 10f;
 
-    /// <summary>
-    /// follow play until distance less than this
-    /// </summary>
-    public float followStopDistance = 1;
-
     public float walkSpeed = 1f;
 
     public AnimationHandler animHandler;
@@ -86,6 +81,9 @@ public class InteractHandler : MonoBehaviour {
             //animator.SetBool("shakehand", true);
             //animator.SetBool("stand", false);
             //animator.SetBool("sit", false);
+
+            animHandler.ChangeState(AnimationHandler.Anim.No);
+            
             enterCloseRange = true;
         }
     }
@@ -97,6 +95,7 @@ public class InteractHandler : MonoBehaviour {
             //animator.SetBool("stand", true);
             //animator.SetBool("shakehand", false);
             //animator.SetBool("sit", false);
+            animHandler.ChangeState(AnimationHandler.Anim.Idle);
             enterMediumRange = true;
         }
     }
@@ -109,37 +108,79 @@ public class InteractHandler : MonoBehaviour {
             //animator.SetBool("sit", true); 
             //animator.SetBool("shakehand", false);
             //animator.SetBool("stand", false);
+            animHandler.ChangeState(AnimationHandler.Anim.Walk);
 
             enterFarRange = true;
         }
     }
 
 
-
+    Vector3 playerHeadLastPos;
+    Vector3 girlHeadLastPos;
     void Update_Range()
     {
-        float range = Vector3.Distance(playerHead.position, girlHead.position);
-        //Debug.Log("range:" + range);
-        if (range < closeRange)
-        {
-            Enter_CloseRange();
-            enterMediumRange = false;
-            enterFarRange = false;
-        }
-        else if (range > closeRange && range < mediumRange)
-        {
-            Enter_MediumRange();
-            enterCloseRange = false;
-            enterFarRange = false;
-        }
-        else if (range > mediumRange && range < farRange)
-        {
-            Enter_FarRange();
-            enterCloseRange = false;
-            enterMediumRange = false;
+        float playerSpeed = Vector3.Distance(playerHeadLastPos, playerHead.position);
+        float girlSpeed = Vector3.Distance(girlHeadLastPos, girlHead.position);
+        Debug.Log((playerSpeed - girlSpeed) > 0 ? "player faster, speed:"+playerSpeed:"girl faster speed:"+ girlSpeed);
+        bool girlWalkToPlayer = true;
+        if (playerSpeed > girlSpeed)
+            girlWalkToPlayer = false;
 
+        float range = Vector3.Distance(playerHead.position, girlHead.position);
+        Debug.Log("range:" + range);
+        if (girlWalkToPlayer)
+        {
+            if (range < closeRange)
+            {
+                Enter_CloseRange();
+                enterMediumRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= closeRange && range < mediumRange)
+            {
+                Enter_MediumRange();
+                enterCloseRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= mediumRange && range < farRange)
+            {
+                Enter_FarRange();
+                enterCloseRange = false;
+                enterMediumRange = false;
+
+                Update_Follow();
+            }
+            else { }
         }
-        else { }
+        else
+        {
+            float tolerance = 0.1f;
+            if (range < closeRange - tolerance)
+            {
+                Enter_CloseRange();
+                enterMediumRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= closeRange- tolerance && range < mediumRange- tolerance)
+            {
+                Enter_MediumRange();
+                enterCloseRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= mediumRange- tolerance && range < farRange- tolerance)
+            {
+                Enter_FarRange();
+                enterCloseRange = false;
+                enterMediumRange = false;
+
+                Update_Follow();
+            }
+            else { }
+        }
+
+
+        playerHeadLastPos = playerHead.position;
+        girlHeadLastPos = girlHead.position;
     }
 
     void Update_Follow()
@@ -148,14 +189,14 @@ public class InteractHandler : MonoBehaviour {
         Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
         Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
 
-        float dis = Vector3.Distance(from, to);
-        if (dis > followStopDistance)
+        //float dis = Vector3.Distance(from, to);
+        //if (dis > mediumRange)
         {
             yifan.transform.position = Vector3.Lerp(from, to, Time.deltaTime * walkSpeed);
-            animHandler.ChangeState(AnimationHandler.Anim.Walk);
+            //animHandler.ChangeState(AnimationHandler.Anim.Walk);
         }
-        else
-            animHandler.ChangeState(AnimationHandler.Anim.Idle);
+        //else
+            //animHandler.ChangeState(AnimationHandler.Anim.Idle);
 
         float angle = Vector3.Angle(yifan.transform.forward, to - from);
         if (angle > 5)
@@ -173,7 +214,7 @@ public class InteractHandler : MonoBehaviour {
     void Update ()
     {
         Update_Range();
-        Update_Follow();
+        //Update_Follow();
 
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);

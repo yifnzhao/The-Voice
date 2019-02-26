@@ -10,6 +10,8 @@ public class AnimationHandler : MonoBehaviour {
     {
         Idle = 0,
         Walk,
+        No,
+        Yes,
 
         Total,
     }
@@ -53,6 +55,24 @@ public class AnimationHandler : MonoBehaviour {
                     Update_Walk();
                 }
                 break;
+            case Anim.No:
+                {
+                    if (!enter)
+                    {
+                        Enter_No();
+                    }
+                    Update_No();
+                }
+                break;
+            case Anim.Yes:
+                {
+                    if (!enter)
+                    {
+                        Enter_Yes();
+                    }
+                    Update_Yes();
+                }
+                break;
             default:
                 Debug.LogError("Unknown state:" + anim);
                 break;
@@ -63,8 +83,24 @@ public class AnimationHandler : MonoBehaviour {
         //    ChangeState(Anim.Idle);
         //if (Input.GetKeyUp(KeyCode.E))
         //    ChangeState(Anim.Walk);
-
     }
+
+    void Enter_Yes()
+    {
+        animator.SetTrigger("yes");
+        enter = true;
+    }
+    void Update_Yes()
+    { }
+
+    void Enter_No()
+    {
+        Debug.Log("Enter_No");
+        animator.SetTrigger("no");
+        enter = true;
+    }
+    void Update_No()
+    { }
 
     void Enter_Idle()
     {
