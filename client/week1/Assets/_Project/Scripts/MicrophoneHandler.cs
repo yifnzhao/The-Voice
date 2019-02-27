@@ -10,6 +10,7 @@ public class MicrophoneHandler : MonoBehaviour {
     public GameObject indicator;
     public ShuoScripts.NetworkModule network;
     public MicSampler micSampler;
+    public TalkIndicator talkIndicator;
 
     // Use this for initialization
     void Start () {
@@ -34,6 +35,8 @@ public class MicrophoneHandler : MonoBehaviour {
         // PlayerTalk
         network.Send(BitConverter.GetBytes(1000));
         micSampler.StartSampling();
+
+        talkIndicator.LightUp(1);
 
         // turn indicator green
         bgLight.GetComponent<Light>().color = Color.green;

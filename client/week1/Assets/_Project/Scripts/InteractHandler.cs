@@ -121,13 +121,13 @@ public class InteractHandler : MonoBehaviour {
     {
         float playerSpeed = Vector3.Distance(playerHeadLastPos, playerHead.position);
         float girlSpeed = Vector3.Distance(girlHeadLastPos, girlHead.position);
-        Debug.Log((playerSpeed - girlSpeed) > 0 ? "player faster, speed:"+playerSpeed:"girl faster speed:"+ girlSpeed);
+        //Debug.Log((playerSpeed - girlSpeed) > 0 ? "player faster, speed:"+playerSpeed:"girl faster speed:"+ girlSpeed);
         bool girlWalkToPlayer = true;
         if (playerSpeed > girlSpeed)
             girlWalkToPlayer = false;
 
         float range = Vector3.Distance(playerHead.position, girlHead.position);
-        Debug.Log("range:" + range);
+        //Debug.Log("range:" + range);
         if (girlWalkToPlayer)
         {
             if (range < closeRange)

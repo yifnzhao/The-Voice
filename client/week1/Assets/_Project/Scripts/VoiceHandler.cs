@@ -15,6 +15,9 @@ public class VoiceHandler : MonoBehaviour {
     public MicrophoneHandler micHandler;
     public TextMesh subtitle;
     public MicSampler micSampler;
+    public TalkIndicator talkIndicator;
+    public TalkContentUI talkContent;
+
     // Use this for initialization
     void Start ()
     {
@@ -41,6 +44,7 @@ public class VoiceHandler : MonoBehaviour {
             if (cmd == 1)
             {
                 micHandler.EndTalk();
+                talkIndicator.LightUp(5);
 
                 byte[] respLen = new byte[sizeof(int)];
                 ms.Read(respLen, 0, respLen.Length);
@@ -56,6 +60,7 @@ public class VoiceHandler : MonoBehaviour {
                 // display subtitle
                 string text = Encoding.UTF8.GetString(respByte);
                 Debug.Log("Girl: " + text + " Emotion:" + emotion + " Confidence:" + confidence);
+                talkContent.Add("Yifan Said: " + text, "EC00FF");
                 subtitle.text = text;
                 Invoke("CleanSubtitle", 5f);
 
@@ -72,6 +77,16 @@ public class VoiceHandler : MonoBehaviour {
             }
             else if (cmd == 2)  // request mic pitch
             {
+                byte[] size = new byte[sizeof(int)];
+                ms.Read(size, 0, sizeof(int));
+                int ss = BitConverter.ToInt32(size, 0);
+                byte[] str = new byte[ss];
+                ms.Read(str, 0, ss);
+                string recogStr = Encoding.UTF8.GetString(str);
+                Debug.Log("Player:" + recogStr);
+                talkContent.Add("You Said: " + recogStr, "008FFF");
+
+                talkIndicator.LightUp(3);
                 micSampler.EndSampling();
                 float pitch = micSampler.GetHighestPitch();
                 MemoryStream sendms = new MemoryStream();
@@ -111,10 +126,10 @@ public class VoiceHandler : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            //audioSource.Play();
-            AudioSource.PlayClipAtPoint(audioSource.clip, GetComponent<InteractHandler>().girlHead.position, 1.0f);
-        }
+        //if (Input.GetKeyUp(KeyCode.A))
+        //{
+        //    //audioSource.Play();
+        //    AudioSource.PlayClipAtPoint(audioSource.clip, GetComponent<InteractHandler>().girlHead.position, 1.0f);
+        //}
 	}
 }
