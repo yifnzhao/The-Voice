@@ -97,6 +97,7 @@ public class AnimationHandler : MonoBehaviour {
     {
         Debug.Log("Enter_No");
         animator.SetTrigger("no");
+        animator.SetTrigger("walkback");
         enter = true;
     }
     void Update_No()

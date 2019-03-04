@@ -17,7 +17,8 @@ public class VoiceHandler : MonoBehaviour {
     public MicSampler micSampler;
     public TalkIndicator talkIndicator;
     public TalkContentUI talkContent;
-
+    string lastSentance;
+    float lastSentenceTime;
     // Use this for initialization
     void Start ()
     {
@@ -59,11 +60,17 @@ public class VoiceHandler : MonoBehaviour {
 
                 // display subtitle
                 string text = Encoding.UTF8.GetString(respByte);
+                if (text == lastSentance && Time.time - lastSentenceTime < 5f)
+                {
+                    Debug.Log("Same response in 5s");
+                    return;
+                }
                 Debug.Log("Girl: " + text + " Emotion:" + emotion + " Confidence:" + confidence);
                 talkContent.Add("Yifan Said: " + text, "EC00FF");
                 subtitle.text = text;
                 Invoke("CleanSubtitle", 5f);
-
+                lastSentance = text;
+                lastSentenceTime = Time.time;
                 // perform emotion
                 emotionHandler.ChangeState((EmotionHandler.Emotion)emotion, confidence);
                 //emotionHandler.ChangeState((EmotionHandler.Emotion.Smile), 100);

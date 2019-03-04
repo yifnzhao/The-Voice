@@ -83,7 +83,7 @@ public class InteractHandler : MonoBehaviour {
             //animator.SetBool("sit", false);
 
             animHandler.ChangeState(AnimationHandler.Anim.No);
-            
+
             enterCloseRange = true;
         }
     }
@@ -133,6 +133,7 @@ public class InteractHandler : MonoBehaviour {
             if (range < closeRange)
             {
                 Enter_CloseRange();
+                Update_Walkback();
                 enterMediumRange = false;
                 enterFarRange = false;
             }
@@ -158,6 +159,7 @@ public class InteractHandler : MonoBehaviour {
             if (range < closeRange - tolerance)
             {
                 Enter_CloseRange();
+                Update_Walkback();
                 enterMediumRange = false;
                 enterFarRange = false;
             }
@@ -183,31 +185,67 @@ public class InteractHandler : MonoBehaviour {
         girlHeadLastPos = girlHead.position;
     }
 
+    void Update_Walkback()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float dis = Vector3.Distance(from, to);
+        if (dis > closeRange)
+        {
+            return;
+        }
+
+        yifan.transform.position = Vector3.Lerp(from, from - to + (from - to).normalized, Time.deltaTime * walkSpeed);
+
+        Update_Turn();
+    }
+
     void Update_Follow()
     {
         GameObject yifan = animator.gameObject;
         Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
         Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
 
-        //float dis = Vector3.Distance(from, to);
-        //if (dis > mediumRange)
-        {
-            yifan.transform.position = Vector3.Lerp(from, to, Time.deltaTime * walkSpeed);
-            //animHandler.ChangeState(AnimationHandler.Anim.Walk);
-        }
-        //else
-            //animHandler.ChangeState(AnimationHandler.Anim.Idle);
+        Vector3 dir = to - from;
+        //Vector3 dir = yifan.transform.forward;
+        //Debug.DrawRay(from, dir);
+        yifan.transform.Translate(dir.normalized * Time.deltaTime * walkSpeed, Space.World);
+
+        Update_Turn();
+    }
+
+    void Update_TurnThenFollow()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
 
         float angle = Vector3.Angle(yifan.transform.forward, to - from);
-        if (angle > 5)
-        {
-            // check normal direction to determine trun diretion
-            Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
-            if(normal.y > 0)
-                yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
-            else
-                yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
-        }
+        Debug.Log("Update_TurnThenFollow angle:" + angle);
+        Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
+        if (normal.y > 0 && angle > 5)
+            yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
+        else if (normal.y < 0 && angle > 10)
+            yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
+        else
+            Update_Follow();
+    }
+
+    void Update_Turn()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float angle = Vector3.Angle(yifan.transform.forward, to - from);
+        Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
+        if (normal.y > 0 && angle > 5)
+            yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
+        else if(normal.y < 0 && angle > 10)
+            yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
+
     }
 
     // Update is called once per frame
@@ -215,6 +253,7 @@ public class InteractHandler : MonoBehaviour {
     {
         Update_Range();
         //Update_Follow();
+        
 
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);

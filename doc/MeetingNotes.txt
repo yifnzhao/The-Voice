@@ -1,10 +1,17 @@
+2019-2-28
+same questions				done
+not repeat same response			done
+girl move back when too close
+teleporting
+tablet subtitle				done
+
 2019-2-21
-add conversation hint
-add talking status indicator
+add conversation hint			done
+add talking status indicator			done
 add learning feature
 maybe change another bigger dataset
 remove long sentences			done
-voice service unauthonrized problem
+voice service unauthonrized problem		done
 make girl walk				done
 
 2019-2-14
