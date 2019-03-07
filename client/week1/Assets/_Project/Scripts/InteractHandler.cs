@@ -52,6 +52,12 @@ public class InteractHandler : MonoBehaviour {
     public float mediumRange = 5f;
     public float farRange = 10f;
 
+    public float walkSpeed = 1f;
+
+    public AnimationHandler animHandler;
+
+    public float turnSpeed = 200f;
+
     // Use this for initialization
     void Start ()
     {
@@ -72,9 +78,12 @@ public class InteractHandler : MonoBehaviour {
         if (!enterCloseRange)
         {
             //Debug.Log("Enter_CloseRange");
-            animator.SetBool("shakehand", true);
-            animator.SetBool("stand", false);
-            animator.SetBool("sit", false);
+            //animator.SetBool("shakehand", true);
+            //animator.SetBool("stand", false);
+            //animator.SetBool("sit", false);
+
+            animHandler.ChangeState(AnimationHandler.Anim.No);
+
             enterCloseRange = true;
         }
     }
@@ -83,9 +92,10 @@ public class InteractHandler : MonoBehaviour {
         if (!enterMediumRange)
         {
             //Debug.Log("Enter_MediumRange");
-            animator.SetBool("stand", true);
-            animator.SetBool("shakehand", false);
-            animator.SetBool("sit", false);
+            //animator.SetBool("stand", true);
+            //animator.SetBool("shakehand", false);
+            //animator.SetBool("sit", false);
+            animHandler.ChangeState(AnimationHandler.Anim.Idle);
             enterMediumRange = true;
         }
     }
@@ -95,46 +105,155 @@ public class InteractHandler : MonoBehaviour {
         if (!enterFarRange)
         {
             //Debug.Log("Enter_FarRange");
-            animator.SetBool("sit", true);
-            animator.SetBool("shakehand", false);
-            animator.SetBool("stand", false);
+            //animator.SetBool("sit", true); 
+            //animator.SetBool("shakehand", false);
+            //animator.SetBool("stand", false);
+            animHandler.ChangeState(AnimationHandler.Anim.Walk);
 
             enterFarRange = true;
         }
     }
 
 
-
+    Vector3 playerHeadLastPos;
+    Vector3 girlHeadLastPos;
     void Update_Range()
     {
+        float playerSpeed = Vector3.Distance(playerHeadLastPos, playerHead.position);
+        float girlSpeed = Vector3.Distance(girlHeadLastPos, girlHead.position);
+        //Debug.Log((playerSpeed - girlSpeed) > 0 ? "player faster, speed:"+playerSpeed:"girl faster speed:"+ girlSpeed);
+        bool girlWalkToPlayer = true;
+        if (playerSpeed > girlSpeed)
+            girlWalkToPlayer = false;
+
         float range = Vector3.Distance(playerHead.position, girlHead.position);
         //Debug.Log("range:" + range);
-        if (range < closeRange)
+        if (girlWalkToPlayer)
         {
-            Enter_CloseRange();
-            enterMediumRange = false;
-            enterFarRange = false;
-        }
-        else if (range > closeRange && range < mediumRange)
-        {
-            Enter_MediumRange();
-            enterCloseRange = false;
-            enterFarRange = false;
-        }
-        else if (range > mediumRange && range < farRange)
-        {
-            Enter_FarRange();
-            enterCloseRange = false;
-            enterMediumRange = false;
+            if (range < closeRange)
+            {
+                Enter_CloseRange();
+                Update_Walkback();
+                enterMediumRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= closeRange && range < mediumRange)
+            {
+                Enter_MediumRange();
+                enterCloseRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= mediumRange && range < farRange)
+            {
+                Enter_FarRange();
+                enterCloseRange = false;
+                enterMediumRange = false;
 
+                Update_Follow();
+            }
+            else { }
         }
-        else { }
+        else
+        {
+            float tolerance = 0.1f;
+            if (range < closeRange - tolerance)
+            {
+                Enter_CloseRange();
+                Update_Walkback();
+                enterMediumRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= closeRange- tolerance && range < mediumRange- tolerance)
+            {
+                Enter_MediumRange();
+                enterCloseRange = false;
+                enterFarRange = false;
+            }
+            else if (range >= mediumRange- tolerance && range < farRange- tolerance)
+            {
+                Enter_FarRange();
+                enterCloseRange = false;
+                enterMediumRange = false;
+
+                Update_Follow();
+            }
+            else { }
+        }
+
+
+        playerHeadLastPos = playerHead.position;
+        girlHeadLastPos = girlHead.position;
+    }
+
+    void Update_Walkback()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float dis = Vector3.Distance(from, to);
+        if (dis > closeRange)
+        {
+            return;
+        }
+
+        yifan.transform.position = Vector3.Lerp(from, from - to + (from - to).normalized, Time.deltaTime * walkSpeed);
+
+        Update_Turn();
+    }
+
+    void Update_Follow()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        Vector3 dir = to - from;
+        //Vector3 dir = yifan.transform.forward;
+        //Debug.DrawRay(from, dir);
+        yifan.transform.Translate(dir.normalized * Time.deltaTime * walkSpeed, Space.World);
+
+        Update_Turn();
+    }
+
+    void Update_TurnThenFollow()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float angle = Vector3.Angle(yifan.transform.forward, to - from);
+        Debug.Log("Update_TurnThenFollow angle:" + angle);
+        Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
+        if (normal.y > 0 && angle > 5)
+            yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
+        else if (normal.y < 0 && angle > 10)
+            yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
+        else
+            Update_Follow();
+    }
+
+    void Update_Turn()
+    {
+        GameObject yifan = animator.gameObject;
+        Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
+        Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
+
+        float angle = Vector3.Angle(yifan.transform.forward, to - from);
+        Vector3 normal = Vector3.Cross(yifan.transform.forward, to - from);
+        if (normal.y > 0 && angle > 5)
+            yifan.transform.Rotate(0, Time.deltaTime * turnSpeed, 0);
+        else if(normal.y < 0 && angle > 10)
+            yifan.transform.Rotate(0, -Time.deltaTime * turnSpeed, 0);
+
     }
 
     // Update is called once per frame
     void Update ()
     {
         Update_Range();
+        //Update_Follow();
+        
 
         // head
         float headDis = Vector3.Distance(playerHead.position, girlHead.position);

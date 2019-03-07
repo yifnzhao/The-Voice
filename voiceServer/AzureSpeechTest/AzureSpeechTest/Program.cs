@@ -13,6 +13,7 @@ using ShuoScripts;
 
 namespace AzureSpeechTest
 {
+    
 
     public class SpeechContent
     {
@@ -75,12 +76,14 @@ namespace AzureSpeechTest
         static NetworkLayer network;
         static ReturnContent returnContent;
         static string backendUrl = @"http://localhost:5000/listen";
-
+        static string AzureKey = "";
         static NetworkModule netowrkModule;
         static void Main(string[] args)
         {
             try
             {
+                LoadAzureKey();
+
                 network = new NetworkLayer();
 
                 // init network
@@ -164,12 +167,21 @@ namespace AzureSpeechTest
 
 
         }
+        public static void LoadAzureKey()
+        {
+            AzureKey = File.ReadAllText("AzureKey.key");
+
+            if (string.IsNullOrEmpty(AzureKey))
+            {
+                Console.WriteLine("No Azure Key");
+            }
+        }
 
     public static void AuthTTS()
         {
             Console.WriteLine("Start TextToSpeech");
             
-            Authentication auth = new Authentication("https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken", "d51c2ff78636458d91821ab43b7219d7");
+            Authentication auth = new Authentication("https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken", AzureKey);
             try
             {
                 accessToken = auth.GetAccessToken();
@@ -286,6 +298,10 @@ namespace AzureSpeechTest
             MemoryStream ms = new MemoryStream();
             // write command id = 2
             ms.Write(BitConverter.GetBytes(2), 0, sizeof(int));
+            byte[] bs = Encoding.UTF8.GetBytes(recognizedByMS);
+            int size = bs.Length;
+            ms.Write(BitConverter.GetBytes(size), 0, sizeof(int));
+            ms.Write(bs, 0, size);
 
             // read
             byte[] buffer = new byte[ms.Length];
@@ -311,7 +327,7 @@ namespace AzureSpeechTest
             // Creates an instance of a speech config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").
             // The default language is "en-us".
-            var config = SpeechConfig.FromSubscription("d51c2ff78636458d91821ab43b7219d7", "westus");
+            var config = SpeechConfig.FromSubscription(AzureKey, "westus");
 
             // Creates a speech recognizer using microphone as audio input.
             // SpeechRecognizer constructor without params for microphone
