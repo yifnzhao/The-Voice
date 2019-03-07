@@ -15,7 +15,20 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 
 class chatterbot_facade:
 	def __init__(self):
-		self.chatbot = ChatBot('LearnBot')
+		self.chatbot = ChatBot("LearnBot",
+								storage_adapter="chatterbot.storage.SQLStorageAdapter",
+								logic_adapters=[
+									{
+										"import_path": "chatterbot.logic.BestMatch",
+										"default_response": "",
+										"maximum_similarity_threshold": 0.90,
+										"statement_comparison_function": "chatterbot.comparisons.levenshtein_distance"
+									}
+								],
+								filters=[
+									"chatterbot.filters.RepetitiveResponseFilter"
+								]
+							)
 		trainer = ChatterBotCorpusTrainer(self.chatbot)
 		trainer.train("chatterbot.corpus.english")
 

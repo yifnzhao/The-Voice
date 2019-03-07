@@ -4,14 +4,17 @@
 # The Voice : Main server code for NLP and text responses.
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
+import os
 import json
 import codecs
 import requests
 import logging
 #logging.basicConfig(level=logging.CRITICAL)
 from func_timeout import func_timeout
+from utils import *
 from models.eliza import eliza
 from models.chatterbot import chatterbot_facade
+#from models.webquery import webquery
 from stubs.emotion import emotion
 
 from logging.handlers import RotatingFileHandler
@@ -20,9 +23,15 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+# Util objecs.
+response_util= responses.responses()
+
 # Response bots.
 eliza_bot = eliza.eliza()
+if os.path.exists("db.sqlite3"):
+	os.remove("db.sqlite3")
 chatter_bot = chatterbot_facade.chatterbot_facade()
+#webquery_bot = webquery.webquery()
 emotion_bot = emotion.emotion()
 
 @app.route("/", methods=['GET', 'POST'])
@@ -44,6 +53,8 @@ def listen():
 	# Default response.
 	response = "I could not understand!"
 
+	# webquery_bot.respond(query)
+
 	# Smart response.
 	# This is in progress...
 	try:
@@ -51,6 +62,8 @@ def listen():
 		# This will time out and throw exception
 		# if an answer is not generated.
 		response = chatter_bot.respond(query)
+		if response == "":
+			raise Exception
 		print("ChatterBot Responding.")
 	except Exception:
 		# Fall-back response
@@ -60,14 +73,8 @@ def listen():
 	# Detect emotion.
 	emotion_paramaters = emotion_bot.predict(query,pitch)
 
-	# Shorten the answer limit to 256 characters if longer.
-	if len(response) > 256: 
-		# Get first 256 characters.
-		# We know just doing this might result with incomplate responses but it is ok for now.
-		response = response[:256]
-
 	response = {
-		"response"   : response,
+		"response"   : response_util.format_response(response),
 		"emotion"    : emotion_paramaters["emotion"],
 		"confidence" : emotion_paramaters["confidence"]
 	}
