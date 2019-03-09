@@ -56,20 +56,18 @@ def listen():
 	# Smart response.
 	# This is in progress...
 	try:
-		# Chatterbot response.
-		# This will time out and throw exception
-		# if an answer is not generated.
-		response = chatter_bot.respond(query)
+		# Dynamic response
+		response = dynamic_bot.respond(query)
 		if response == "":
 			raise Exception
-		print("ChatterBot Responding.")
+		print("DynamicBot Responding.")
 	except Exception:
 		try:
-			# Dynamic response
-			response = dynamic_bot.respond(query)
+			# Chatterbot response.
+			response = chatter_bot.respond(query)
 			if response == "":
 				raise Exception
-			print("DynamicBot Responding.")
+			print("ChatterBot Responding.")
 		except:
 			# Fall-back response
 			response = eliza_bot.respond(query)
