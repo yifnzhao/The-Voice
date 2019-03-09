@@ -9,7 +9,7 @@ public class JawHandler : MonoBehaviour {
     public AudioVisualization audioVisualization;
 
     float naturalPos = 0.0536f;
-    float openPos = 0.064f;
+    float openPos = 0.069f;
     Vector3 oriPos;
     Vector3 targetPos;
     

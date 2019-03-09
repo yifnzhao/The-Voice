@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEngine;
 
 public class InteractHandler : MonoBehaviour {
@@ -58,6 +61,8 @@ public class InteractHandler : MonoBehaviour {
 
     public float turnSpeed = 200f;
 
+    public ShuoScripts.NetworkModule networkModule;
+
     // Use this for initialization
     void Start ()
     {
@@ -69,7 +74,27 @@ public class InteractHandler : MonoBehaviour {
         handTargetLeft.GetComponent<MeshRenderer>().enabled = false;
         handTargetRight.GetComponent<MeshRenderer>().enabled = false;
 
+        Invoke("Greeeting", 5f);
     }
+
+    void Greeeting()
+    {
+        string text = PredefinedTalkHandler.GetGreeting();
+        MemoryStream sendms = new MemoryStream();
+        sendms.Write(BitConverter.GetBytes(1002), 0, sizeof(Int32));
+        sendms.Write(BitConverter.GetBytes(text.Length), 0, sizeof(Int32));
+        sendms.Write(Encoding.UTF8.GetBytes(text), 0, text.Length);
+        EmotionHandler.Emotion emotion = EmotionHandler.Emotion.Smile;
+        sendms.Write(BitConverter.GetBytes((int)emotion), 0, sizeof(Int32));
+        float confidence = 100;
+        sendms.Write(BitConverter.GetBytes(confidence), 0, sizeof(float));
+
+        byte[] sent = new byte[sendms.Length];
+        sendms.Seek(0, SeekOrigin.Begin);
+        sendms.Read(sent, 0, (int)sendms.Length);
+        networkModule.Send(sent);
+    }
+
     bool enterCloseRange = false;
     bool enterMediumRange = false;
     bool enterFarRange = false;
@@ -83,6 +108,21 @@ public class InteractHandler : MonoBehaviour {
             //animator.SetBool("sit", false);
 
             animHandler.ChangeState(AnimationHandler.Anim.No);
+
+            string text = PredefinedTalkHandler.GetTooClose();
+            MemoryStream sendms = new MemoryStream();
+            sendms.Write(BitConverter.GetBytes(1002), 0, sizeof(Int32));
+            sendms.Write(BitConverter.GetBytes(text.Length), 0, sizeof(Int32));
+            sendms.Write(Encoding.UTF8.GetBytes(text), 0, text.Length);
+            EmotionHandler.Emotion emotion = EmotionHandler.Emotion.Sad;
+            sendms.Write(BitConverter.GetBytes((int)emotion), 0, sizeof(Int32));
+            float confidence = 100;
+            sendms.Write(BitConverter.GetBytes(confidence), 0, sizeof(float));
+
+            byte[] sent = new byte[sendms.Length];
+            sendms.Seek(0, SeekOrigin.Begin);
+            sendms.Read(sent, 0, (int)sendms.Length);
+            networkModule.Send(sent);
 
             enterCloseRange = true;
         }

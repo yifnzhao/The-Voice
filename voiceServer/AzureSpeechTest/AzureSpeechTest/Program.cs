@@ -30,6 +30,37 @@ namespace AzureSpeechTest
         Total
     }
 
+    public static class Utility
+    {
+        public static Emotion ConvertEmotion(string _str)
+        {
+            if (_str == "natural")
+                return Emotion.Natual;
+            else if (_str == "happy")
+                return Emotion.Smile;
+            else if (_str == "sad")
+                return Emotion.Sad;
+            else
+                return Emotion.Total;
+        }
+
+        public static string ConvertEmotion(Emotion _emo)
+        {
+            switch (_emo)
+            {
+                case Emotion.Natual:
+                    return "natural";
+                case Emotion.Sad:
+                    return "sad";
+                case Emotion.Smile:
+                    return "happy";
+                default:
+                    return "unknown";
+
+            }
+        }
+    }
+
     public class ReturnContent
     {
         public string response;
@@ -39,13 +70,7 @@ namespace AzureSpeechTest
         public static byte[] ToByte(ReturnContent _content)
         {
             byte[] resByte = Encoding.UTF8.GetBytes(_content.response);
-            Emotion emo = Emotion.Total;
-            if (_content.emotion == "natural")
-                emo = Emotion.Natual;
-            else if (_content.emotion == "happy")
-                emo = Emotion.Smile;
-            else if (_content.emotion == "sad")
-                emo = Emotion.Sad;
+            Emotion emo = Utility.ConvertEmotion(_content.emotion);
             byte[] emoByte = BitConverter.GetBytes((int)emo);
             byte[] confByte = BitConverter.GetBytes((float)_content.confidence);
 
@@ -71,7 +96,6 @@ namespace AzureSpeechTest
     class Program
     {
         static string recognizedByMS;
-        static string recognizedByTheVoice;
         static string accessToken;
         static NetworkLayer network;
         static ReturnContent returnContent;
@@ -125,8 +149,25 @@ namespace AzureSpeechTest
                         }
                         Console.WriteLine("Json from backend = " + retJson);
                         returnContent = JsonConvert.DeserializeObject<ReturnContent>(retJson);
-                        recognizedByTheVoice = returnContent.response;
-                        StartTTS();
+                        string recognizedByTheVoice = returnContent.response;
+                        StartTTS(recognizedByTheVoice);
+                    }
+                    else if (cmd == 1002)   // predefined text, example: thinking talk
+                    {
+                        byte[] sizeB = new byte[sizeof(Int32)];
+                        ms.Read(sizeB, 0, sizeof(Int32));
+                        int size = BitConverter.ToInt32(sizeB, 0);
+                        byte[] strB = new byte[size];
+                        ms.Read(strB, 0, size);
+                        string content = Encoding.UTF8.GetString(strB);
+                        byte[] emoB = new byte[sizeof(Int32)];
+                        ms.Read(emoB, 0, sizeof(Int32));
+                        Emotion emotion = (Emotion)BitConverter.ToInt32(emoB, 0);
+                        byte[] confB = new byte[sizeof(float)];
+                        ms.Read(confB, 0, sizeof(float));
+                        returnContent = new ReturnContent() {
+                            confidence = BitConverter.ToSingle(confB, 0), response = content, emotion = Utility.ConvertEmotion(emotion) };
+                        StartTTS(content);
                     }
                     else
                         Console.WriteLine("Unkown param:" + cmd);
@@ -196,9 +237,9 @@ namespace AzureSpeechTest
             }
         }
 
-        public static void StartTTS()
+        public static void StartTTS(string _content)
         {
-            if (string.IsNullOrEmpty(recognizedByTheVoice))
+            if (string.IsNullOrEmpty(_content))
             {
                 Console.WriteLine("Nothing Recognized");
                 return;
@@ -221,7 +262,7 @@ namespace AzureSpeechTest
             {
                 RequestUri = new Uri(requestUri),
                 // Text to be spoken.
-                Text = recognizedByTheVoice,
+                Text = _content,
                 VoiceType = Gender.Female,  // useless!
                 // Refer to the documentation for complete list of supported locales.
                 Locale = "en-US",
@@ -232,7 +273,8 @@ namespace AzureSpeechTest
                 // VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
 
                 // Service can return audio in different output format.
-                OutputFormat = AudioOutputFormat.Riff24Khz16BitMonoPcm,
+                //OutputFormat = AudioOutputFormat.Riff24Khz16BitMonoPcm,
+                OutputFormat = AudioOutputFormat.Riff16Khz16BitMonoPcm,
                 AuthorizationToken = "Bearer " + accessToken,
             }).Wait();
 
@@ -335,6 +377,7 @@ namespace AzureSpeechTest
             {
                 // Starts recognizing.
                 Console.WriteLine("Say something...");
+                recognizedByMS = "";
 
                 // Performs recognition. RecognizeOnceAsync() returns when the first utterance has been recognized,
                 // so it is suitable only for single shot recognition like command or query. For long-running

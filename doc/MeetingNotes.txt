@@ -1,8 +1,20 @@
+ppt 3~5 pages
+research article 
+
+2019-3-5
+lip big open					done
+more visible of emotions by player's voice pitch		done
+think animation
+talk animation					done
+predefined thinking sentences				done
+recogonization bug					done
+natural tone on azure
+
 2019-2-28
 same questions				done
 not repeat same response			done
-girl move back when too close
-teleporting
+girl move back when too close		done
+teleporting				done
 tablet subtitle				done
 
 2019-2-21

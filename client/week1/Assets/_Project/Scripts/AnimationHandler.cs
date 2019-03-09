@@ -12,6 +12,7 @@ public class AnimationHandler : MonoBehaviour {
         Walk,
         No,
         Yes,
+        Talk,
 
         Total,
     }
@@ -73,6 +74,16 @@ public class AnimationHandler : MonoBehaviour {
                     Update_Yes();
                 }
                 break;
+            case Anim.Talk:
+                {
+                    if (!enter)
+                    {
+                        Enter_Talk();
+                    }
+                    Update_Talk();
+                }
+                break;
+
             default:
                 Debug.LogError("Unknown state:" + anim);
                 break;
@@ -107,6 +118,7 @@ public class AnimationHandler : MonoBehaviour {
     {
         Debug.Log("Enter_Idle");
         animator.SetBool("walk", false);
+        animator.SetBool("talk", false);
         enter = true;
     }
 
@@ -117,13 +129,25 @@ public class AnimationHandler : MonoBehaviour {
     {
         Debug.Log("Enter_Walk");
         animator.SetBool("walk", true);
+        animator.SetBool("talk", false);
         enter = true;
     }
 
     void Update_Walk()
     { }
 
-    
+
+    void Enter_Talk()
+    {
+        Debug.Log("Enter_Talk");
+        animator.SetBool("talk", true);
+        enter = true;
+    }
+
+    void Update_Talk()
+    { }
+
+
 
     public void ChangeState(Anim _anim)
     {
