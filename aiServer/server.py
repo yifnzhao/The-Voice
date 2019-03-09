@@ -14,7 +14,7 @@ from func_timeout import func_timeout
 from utils import *
 from models.eliza import eliza
 from models.chatterbot import chatterbot_facade
-#from models.webquery import webquery
+from models.webquery import webquery
 from stubs.emotion import emotion
 
 from logging.handlers import RotatingFileHandler
@@ -31,7 +31,7 @@ eliza_bot = eliza.eliza()
 if os.path.exists("db.sqlite3"):
 	os.remove("db.sqlite3")
 chatter_bot = chatterbot_facade.chatterbot_facade()
-#webquery_bot = webquery.webquery()
+dynamic_bot = webquery.webquery()
 emotion_bot = emotion.emotion()
 
 @app.route("/", methods=['GET', 'POST'])
@@ -53,8 +53,6 @@ def listen():
 	# Default response.
 	response = "I could not understand!"
 
-	# webquery_bot.respond(query)
-
 	# Smart response.
 	# This is in progress...
 	try:
@@ -66,9 +64,16 @@ def listen():
 			raise Exception
 		print("ChatterBot Responding.")
 	except Exception:
-		# Fall-back response
-		response = eliza_bot.respond(query)
-		print("Eliza Responding.")
+		try:
+			# Dynamic response
+			response = dynamic_bot.respond(query)
+			if response == "":
+				raise Exception
+			print("DynamicBot Responding.")
+		except:
+			# Fall-back response
+			response = eliza_bot.respond(query)
+			print("Eliza Responding.")
 
 	# Detect emotion.
 	emotion_paramaters = emotion_bot.predict(query,pitch)

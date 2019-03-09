@@ -4,8 +4,11 @@
 # The Voice : Response util methods.
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
+import re, string
 
 class responses:
+	def __init__(self):
+		self.punctuation_regex = re.compile('[%s]' % re.escape(string.punctuation))
 
 	#----------------------------------------------------------------------
 	#  Do the necessary formatting on the response.
@@ -24,5 +27,14 @@ class responses:
 			# Get first 256 characters.
 			# We know just doing this might result with incomplate responses but it is ok for now.
 			response = response[:256]
+			#self.get_last_punctuation_location(response)
 
 		return response
+
+	def get_last_punctuation_location(self,response):
+		location = 0
+		location = self.punctuation_regex.search(response[::-1]).end()
+
+		print(location)
+
+		return location

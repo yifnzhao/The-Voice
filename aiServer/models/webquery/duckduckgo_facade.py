@@ -15,5 +15,8 @@ class duckduckgo_facade:
 	#----------------------------------------------------------------------
 	@timeout(3)
 	def respond(self,str):
-		response = duckduckquery(str).related_topics[0]
+		# Doing below doesn't always return revelant answers.
+		# response = response.related_topics[0].text
+		# This will return empty if there is no abstract text.
+		response = duckduckquery(str).abstract_text
 		return response

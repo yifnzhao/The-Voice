@@ -17,6 +17,8 @@ class webquery:
 	#----------------------------------------------------------------------
 	@timeout(5)
 	def respond(self,str):
+		# Get DuckDuckGo response.
 		response = self.duckduckgo_api.respond(str)
-		#response = self.chatbot.get_response(str).text
-		print(response)
+		if response == "":
+			return response
+		return response
