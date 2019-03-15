@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
 using UnityEngine;
 #endif
 
@@ -19,7 +19,7 @@ namespace AldenNet
         public const uint HEARBEAT_ToServer = 9999;
     }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
     public class AldenNet : MonoBehaviour
 #else
     public class AldenNet
@@ -49,7 +49,7 @@ namespace AldenNet
         }
 
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
         private void Start()
         {
             // test as a client
@@ -129,7 +129,7 @@ namespace AldenNet
                 {
                     try
                     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                         Debug.Log("ClientID:" + clientID + " Received: " + dataRecv.Length + " bytes");
 #else
                         Console.WriteLine("ClientID:" + clientID + " Received: " + dataRecv.Length + " bytes");
@@ -143,7 +143,7 @@ namespace AldenNet
                     catch (Exception e)
                     {
                         dataRecvFlag = false;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                         Debug.LogError(e.ToString());
 #else
                         Console.WriteLine(e.ToString());
@@ -201,7 +201,7 @@ namespace AldenNet
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -229,7 +229,7 @@ namespace AldenNet
                     clientStream.Write(_data, 0, _data.Length);
                     clientStream.Flush();
                 }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log(_data.Length + " bytes sent to clientID:" + _peer.clientID);
 #else
                 Console.WriteLine(_data.Length + " bytes sent to clientID:" + _peer.clientID);
@@ -242,7 +242,7 @@ namespace AldenNet
 
         public void Listen()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
             Debug.Log("Server Listening @" + ipep.ToString());
 #else
             Console.WriteLine("Server Listening @" + ipep.ToString());
@@ -264,7 +264,7 @@ namespace AldenNet
                     clientID++;
                     peerList.Add(peer);
                 }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log("Client " + peer.clientID + " Connected");
 #else
                 Console.WriteLine("Client " + peer.clientID + " Connected");
@@ -318,7 +318,7 @@ namespace AldenNet
                         {
                             byte[] b = BitConverter.GetBytes(PredefinedMsg.HEARBEAT_ToClient);
                             SendToPeer(p, b);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                             //Debug.Log("Heartbeat sent to Client" + p.clientID);
 #else
                             //Console.WriteLine("Heartbeat sent to Client" + p.clientID);
@@ -329,7 +329,7 @@ namespace AldenNet
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.LogError(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -342,7 +342,7 @@ namespace AldenNet
         {
             try
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log("wait for receive");
 #else
                 Console.WriteLine("wait for receive");
@@ -356,7 +356,7 @@ namespace AldenNet
                         {
                             // disconnected
                             RemovePeer(p);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                             Debug.Log("Client" + p.clientID + " disconnected");
 #else
                             Console.WriteLine("Client" + p.clientID + " disconnected");
@@ -377,7 +377,7 @@ namespace AldenNet
                         // handle hearbeat
                         if (sizeInt == sizeof(uint) && BitConverter.ToUInt32(dataRecv, 0) == PredefinedMsg.HEARBEAT_ToServer)
                         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                             //Debug.Log("Heartbeat back from Client" + p.clientID);
 #else
                             //Console.WriteLine("Heartbeat back from Client" + p.clientID);
@@ -389,7 +389,7 @@ namespace AldenNet
 
                         p.dataRecvFlag = true;
                         p.dataRecv = dataRecv;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                         //Debug.Log("Received: " + dataRecv.Length + " bytes");
                         //dataRecvFlag = true;
 #else
@@ -400,7 +400,7 @@ namespace AldenNet
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.LogError(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -408,7 +408,7 @@ namespace AldenNet
             }
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
         public void Update()
         {
             foreach (var p in peerList)
@@ -473,7 +473,7 @@ namespace AldenNet
                     clientStream.Write(_data, 0, _data.Length);
                     //clientStream.Flush();
                 }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log(_data.Length + " bytes sent");
 #else
                 Console.WriteLine(_data.Length + " bytes sent");
@@ -481,7 +481,7 @@ namespace AldenNet
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.LogError(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -492,7 +492,7 @@ namespace AldenNet
         void RecvThread()
         {
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
             Debug.Log("wait for receive");
 #else
             Console.WriteLine("wait for receive");
@@ -511,7 +511,7 @@ namespace AldenNet
                         byte[] sizebyte = new byte[sizeof(Int32)];
                         clientStream.Read(sizebyte, 0, sizeof(Int32));
                         int sizeInt = BitConverter.ToInt32(sizebyte, 0);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                         Debug.Log("Total Net Package Size:" + sizeInt);
 #endif
                         if (sizeInt <= 0)
@@ -536,7 +536,7 @@ namespace AldenNet
                     }
                     if (dataRecv == null || dataRecv.Length == 0)
                         continue;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                     dataRecvFlag = true;
 #else
                     Console.WriteLine("Received: " + dataRecv.Length + " bytes");
@@ -546,7 +546,7 @@ namespace AldenNet
                 }
                 catch (Exception e)
                 {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                     Debug.LogError(e.ToString());
 #else
                     Console.WriteLine(e.ToString());
@@ -556,7 +556,7 @@ namespace AldenNet
 
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
         public void Update()
         {
             if (dataRecvFlag)

@@ -7,13 +7,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
 using UnityEngine;
 #endif
 
 namespace ShuoScripts
 {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
     public class NetworkModule : MonoBehaviour
 #else
     public class NetworkModule
@@ -81,7 +81,7 @@ namespace ShuoScripts
             }
             catch(Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -93,7 +93,7 @@ namespace ShuoScripts
         void ClientRecvThread()
         {
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
             Debug.Log("wait for receive");
 #else
             Console.WriteLine("wait for receive");
@@ -112,7 +112,7 @@ namespace ShuoScripts
                         byte[] sizebyte = new byte[sizeof(Int32)];
                         clientStream.Read(sizebyte, 0, sizeof(Int32));
                         int sizeInt = BitConverter.ToInt32(sizebyte, 0);
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                         Debug.Log("+++ sizeInt" + sizeInt);
 #endif
                         if (sizeInt == 0)
@@ -122,7 +122,7 @@ namespace ShuoScripts
                     }
                     if (dataRecv.Length == 0)
                         continue;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                     dataRecvFlag = true;
 #else
                 Console.WriteLine("Received: " + dataRecv.Length + " bytes");
@@ -132,7 +132,7 @@ namespace ShuoScripts
                 }
                 catch (Exception e)
                 {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                     Debug.LogError(e.ToString());
 #else
                     Console.WriteLine(e.ToString());
@@ -147,7 +147,7 @@ namespace ShuoScripts
         {
             try
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log("wait for receive");
 #else
                 Console.WriteLine("wait for receive");
@@ -169,7 +169,7 @@ namespace ShuoScripts
                     }
                     if (dataRecv.Length == 0)
                         continue;
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                     Debug.Log("Received: " + dataRecv.Length + " bytes");
                     dataRecvFlag = true;
 #else
@@ -181,7 +181,7 @@ namespace ShuoScripts
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.LogError(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -207,7 +207,7 @@ namespace ShuoScripts
                         clientStream.Write(BitConverter.GetBytes(len), 0, sizeof(Int32));
                         clientStream.Write(_data, 0, _data.Length);
                     }
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.Log(_data.Length + " bytes sent");
 #else
                     Console.WriteLine(_data.Length + " bytes sent");
@@ -227,7 +227,7 @@ namespace ShuoScripts
             }
             catch (Exception e)
             {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
                 Debug.LogError(e.ToString());
 #else
                 Console.WriteLine(e.ToString());
@@ -235,7 +235,7 @@ namespace ShuoScripts
             }
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN
         private void Start()
         {
             Init(false);
