@@ -8,7 +8,8 @@ using System.Text;
 
 public class VoiceHandler : MonoBehaviour {
 
-    public NetworkModule networkModule;
+    //public NetworkModule networkModule;
+    public AldenNet.AldenNet aldenNet;
     public AudioSource audioSource;
     public AudioVisualization audioVis;
     public EmotionHandler emotionHandler;
@@ -33,7 +34,8 @@ public class VoiceHandler : MonoBehaviour {
 
         audioVis.audioSource = audioSource;
 
-        networkModule.Output += (b) => 
+        //networkModule.Output += (b) => 
+        aldenNet.GetClient().Output+= (b) => 
         {
             if (b == null || b.Length == 0)
                 return;
@@ -46,6 +48,14 @@ public class VoiceHandler : MonoBehaviour {
             if (cmd == 1)
             {
                 micHandler.EndTalk();
+
+                if (audioSource.isPlaying)
+                {
+                    //ms.Close();
+                    //return;
+                    audioSource.Stop();
+                }
+
                 talkIndicator.LightUp(5);
 
                 byte[] respLen = new byte[sizeof(int)];
@@ -64,7 +74,7 @@ public class VoiceHandler : MonoBehaviour {
                 if (text == lastSentance && Time.time - lastSentenceTime < 5f)
                 {
                     Debug.Log("Same response in 5s");
-                    return;
+                    //return;
                 }
                 Debug.Log("Girl: " + text + " Emotion:" + emotion + " Confidence:" + confidence);
                 talkContent.Add("Yifan Said: " + text, "EC00FF");
@@ -79,7 +89,11 @@ public class VoiceHandler : MonoBehaviour {
                 // play audio
                 byte[] voiceByte = new byte[ms.Length - ms.Position];
                 ms.Read(voiceByte, 0, voiceByte.Length);
-                audioSource.clip = WavUtility.ToAudioClip(voiceByte);
+
+                //audioSource.clip = WavUtility.ToAudioClip(voiceByte);
+                string filePath = Application.streamingAssetsPath + "/voice.wav";
+                File.WriteAllBytes(filePath, voiceByte);
+                audioSource.clip = WavUtility.ToAudioClip(filePath);
                 audioSource.Play();
                 audioVis.clip = audioSource.clip;
 
@@ -107,10 +121,13 @@ public class VoiceHandler : MonoBehaviour {
                 byte[] sent = new byte[sendms.Length];
                 sendms.Seek(0, SeekOrigin.Begin);
                 sendms.Read(sent, 0, (int)sendms.Length);
-                networkModule.Send(sent);
+                //networkModule.Send(sent);
+                aldenNet.GetClient().Send(sent);
 
                 //Invoke("SendThinkText", 0.1f);
             }
+            else if (cmd == AldenNet.PredefinedMsg.HEARBEAT_ToClient || cmd == AldenNet.PredefinedMsg.HEARBEAT_ToServer)
+            { }
             else
                 Debug.LogError("Unknow Command:" + cmd);
 
@@ -126,6 +143,7 @@ public class VoiceHandler : MonoBehaviour {
 
     void SendThinkText()
     {
+        return;
         // send thinking text
         string text = PredefinedTalkHandler.GetThinkingText();
         MemoryStream sendmss = new MemoryStream();
@@ -140,7 +158,8 @@ public class VoiceHandler : MonoBehaviour {
         byte[] senttt = new byte[sendmss.Length];
         sendmss.Seek(0, SeekOrigin.Begin);
         sendmss.Read(senttt, 0, (int)sendmss.Length);
-        networkModule.Send(senttt);
+        //networkModule.Send(senttt);
+        aldenNet.GetClient().Send(senttt);
     }
 
     void CleanSubtitle()
@@ -163,10 +182,10 @@ public class VoiceHandler : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        //if (Input.GetKeyUp(KeyCode.A))
-        //{
-        //    //audioSource.Play();
-        //    AudioSource.PlayClipAtPoint(audioSource.clip, GetComponent<InteractHandler>().girlHead.position, 1.0f);
-        //}
-	}
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            //audioSource.Play();
+            AudioSource.PlayClipAtPoint(audioSource.clip, GetComponent<InteractHandler>().girlHead.position, 1.0f);
+        }
+    }
 }

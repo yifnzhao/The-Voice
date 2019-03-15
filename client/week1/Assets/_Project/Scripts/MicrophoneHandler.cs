@@ -9,7 +9,8 @@ public class MicrophoneHandler : MonoBehaviour {
 
     public GameObject bgLight;
     public GameObject indicator;
-    public ShuoScripts.NetworkModule network;
+    //public ShuoScripts.NetworkModule network;
+    public AldenNet.AldenNet aldenNet;
     public MicSampler micSampler;
     public TalkIndicator talkIndicator;
 
@@ -34,7 +35,8 @@ public class MicrophoneHandler : MonoBehaviour {
     void Enter_SwitchOn()
     {
         // PlayerTalk
-        network.Send(BitConverter.GetBytes(1000));
+        //network.Send(BitConverter.GetBytes(1000));
+        aldenNet.GetClient().Send(BitConverter.GetBytes(1000));
         micSampler.StartSampling();
 
         talkIndicator.LightUp(1);
@@ -96,6 +98,7 @@ public class MicrophoneHandler : MonoBehaviour {
         byte[] senttt = new byte[sendmss.Length];
         sendmss.Seek(0, SeekOrigin.Begin);
         sendmss.Read(senttt, 0, (int)sendmss.Length);
-        network.Send(senttt);
+        //network.Send(senttt);
+        aldenNet.GetClient().Send(senttt);
     }
 }

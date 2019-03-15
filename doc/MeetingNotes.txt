@@ -1,5 +1,10 @@
 ppt 3~5 pages
 research article 
+Mar 26th ubisoft 4pm st-laurent
+
+2019-3-14
+add new player guide
+optimize long sentences both think and dynamic bot
 
 2019-3-5
 lip big open					done
@@ -8,6 +13,8 @@ think animation
 talk animation					done
 predefined thinking sentences				done
 recogonization bug					done
+reconstruct network layer				done
+dynamic bot					done
 natural tone on azure
 
 2019-2-28

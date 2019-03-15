@@ -54,7 +54,7 @@ namespace CognitiveServicesTTS
         private Timer accessTokenRenewer;
 
         //Access token expires every 10 minutes. Renew it every 9 minutes only.
-        private const int RefreshTokenDuration = 9;
+        private const int RefreshTokenDuration = 2;
 
         public Authentication(string issueTokenUri, string apiKey)
         {

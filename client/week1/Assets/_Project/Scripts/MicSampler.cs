@@ -6,7 +6,6 @@ using ShuoScripts;
 public class MicSampler : MonoBehaviour {
 
     public AudioVisualization audioVisualization;
-    public NetworkModule networkModule;
 
     float highestPitch;
 

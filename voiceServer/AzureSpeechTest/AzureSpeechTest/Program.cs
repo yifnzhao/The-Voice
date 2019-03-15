@@ -10,6 +10,7 @@ using System.Media;
 using System.Threading;
 using Newtonsoft.Json;
 using ShuoScripts;
+using AldenNet;
 
 namespace AzureSpeechTest
 {
@@ -101,7 +102,8 @@ namespace AzureSpeechTest
         static ReturnContent returnContent;
         static string backendUrl = @"http://localhost:5000/listen";
         static string AzureKey = "";
-        static NetworkModule netowrkModule;
+        //static NetworkModule netowrkModule;
+        static AldenNet.AldenNet netowrkModule;
         static void Main(string[] args)
         {
             try
@@ -111,90 +113,80 @@ namespace AzureSpeechTest
                 network = new NetworkLayer();
 
                 // init network
-                netowrkModule = new NetworkModule();
-                netowrkModule.recvPort = 6000;
-                netowrkModule.sendPort = 6001;
+                netowrkModule = new AldenNet.AldenNet();
+                netowrkModule.port = 6000;
                 netowrkModule.Init(true);
-                netowrkModule.Recv();
-                netowrkModule.Output += (b) =>
+                netowrkModule.GetSerer().OnPeerConnected += (p) => 
                 {
-                    MemoryStream ms = new MemoryStream(b);
-                    byte[] cmdB = new byte[sizeof(Int32)];
-                    ms.Read(cmdB, 0, sizeof(Int32));
-                    int cmd = BitConverter.ToInt32(cmdB, 0);
-                    Console.WriteLine(Encoding.ASCII.GetString(b));
-
-                    //"PlayerTalking"
-                    if (cmd == 1000)
+                    p.Output += (b) =>
                     {
-                        RecognitionWithMicrophoneAsync().Wait();
+                        MemoryStream ms = new MemoryStream(b);
+                        byte[] cmdB = new byte[sizeof(Int32)];
+                        ms.Read(cmdB, 0, sizeof(Int32));
+                        int cmd = BitConverter.ToInt32(cmdB, 0);
+                        Console.WriteLine(Encoding.ASCII.GetString(b));
 
-                        if (string.IsNullOrEmpty(recognizedByMS))
-                            return;
-
-                        SendPitchRequestToUnity();
-                    }
-                    else if (cmd == 1001)
-                    {
-                        byte[] pitchB = new byte[sizeof(float)];
-                        ms.Read(pitchB, 0, sizeof(float));
-                        float pitch = BitConverter.ToSingle(pitchB, 0);
-                        SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = pitch };
-                        string json = JsonConvert.SerializeObject(c, Formatting.None);
-                        string retJson = network.PostJson(backendUrl, json);
-                        if (string.IsNullOrEmpty(retJson))
+                        //"PlayerTalking"
+                        if (cmd == 1000)
                         {
-                            Console.WriteLine("Json from backend is empty!");
-                            return;
-                        }
-                        Console.WriteLine("Json from backend = " + retJson);
-                        returnContent = JsonConvert.DeserializeObject<ReturnContent>(retJson);
-                        string recognizedByTheVoice = returnContent.response;
-                        StartTTS(recognizedByTheVoice);
-                    }
-                    else if (cmd == 1002)   // predefined text, example: thinking talk
-                    {
-                        byte[] sizeB = new byte[sizeof(Int32)];
-                        ms.Read(sizeB, 0, sizeof(Int32));
-                        int size = BitConverter.ToInt32(sizeB, 0);
-                        byte[] strB = new byte[size];
-                        ms.Read(strB, 0, size);
-                        string content = Encoding.UTF8.GetString(strB);
-                        byte[] emoB = new byte[sizeof(Int32)];
-                        ms.Read(emoB, 0, sizeof(Int32));
-                        Emotion emotion = (Emotion)BitConverter.ToInt32(emoB, 0);
-                        byte[] confB = new byte[sizeof(float)];
-                        ms.Read(confB, 0, sizeof(float));
-                        returnContent = new ReturnContent() {
-                            confidence = BitConverter.ToSingle(confB, 0), response = content, emotion = Utility.ConvertEmotion(emotion) };
-                        StartTTS(content);
-                    }
-                    else
-                        Console.WriteLine("Unkown param:" + cmd);
+                            RecognitionWithMicrophoneAsync().Wait();
 
-                    ms.Close();
+                            if (string.IsNullOrEmpty(recognizedByMS))
+                                return;
+
+                            SendPitchRequestToUnity();
+                        }
+                        else if (cmd == 1001)
+                        {
+                            byte[] pitchB = new byte[sizeof(float)];
+                            ms.Read(pitchB, 0, sizeof(float));
+                            float pitch = BitConverter.ToSingle(pitchB, 0);
+                            SpeechContent c = new SpeechContent() { content = recognizedByMS, pitch = pitch };
+                            string json = JsonConvert.SerializeObject(c, Formatting.None);
+                            string retJson = network.PostJson(backendUrl, json);
+                            if (string.IsNullOrEmpty(retJson))
+                            {
+                                Console.WriteLine("Json from backend is empty!");
+                                return;
+                            }
+                            Console.WriteLine("Json from backend = " + retJson);
+                            returnContent = JsonConvert.DeserializeObject<ReturnContent>(retJson);
+                            string recognizedByTheVoice = returnContent.response;
+                            StartTTS(recognizedByTheVoice);
+                        }
+                        else if (cmd == 1002)   // predefined text, example: thinking talk
+                        {
+                            byte[] sizeB = new byte[sizeof(Int32)];
+                            ms.Read(sizeB, 0, sizeof(Int32));
+                            int size = BitConverter.ToInt32(sizeB, 0);
+                            byte[] strB = new byte[size];
+                            ms.Read(strB, 0, size);
+                            string content = Encoding.UTF8.GetString(strB);
+                            byte[] emoB = new byte[sizeof(Int32)];
+                            ms.Read(emoB, 0, sizeof(Int32));
+                            Emotion emotion = (Emotion)BitConverter.ToInt32(emoB, 0);
+                            byte[] confB = new byte[sizeof(float)];
+                            ms.Read(confB, 0, sizeof(float));
+                            returnContent = new ReturnContent()
+                            {
+                                confidence = BitConverter.ToSingle(confB, 0),
+                                response = content,
+                                emotion = Utility.ConvertEmotion(emotion)
+                            };
+                            StartTTS(content);
+                        }
+                        else
+                            Console.WriteLine("Unkown param:" + cmd);
+
+                        ms.Close();
+                    };
                 };
 
                 // initiazize
                 AuthTTS();
 
-                //do
-                //{
-                //    RecognitionWithMicrophoneAsync().Wait();
+                netowrkModule.GetSerer().Listen();
 
-                //    if (string.IsNullOrEmpty(recognizedByMS))
-                //        continue;
-                //    SpeechContent c = new SpeechContent() { content = recognizedByMS };
-                //    string json = JsonConvert.SerializeObject(c, Formatting.Indented);
-                //    string retJson = network.PostJson(backendUrl, json);
-                //    Console.WriteLine("Json from backend = " + retJson);
-                //    ReturnContent ret = JsonConvert.DeserializeObject<ReturnContent>(retJson);
-                //    recognizedByTheVoice = ret.response;
-                //    StartTTS();
-
-                //    Console.ReadKey();
-
-                //} while (true);
             }
             catch (Exception e)
             {
@@ -290,8 +282,8 @@ namespace AzureSpeechTest
         private static void PlayAudio(object sender, GenericEventArgs<Stream> args)
         {
             bool directPlay = false;
-            //Console.WriteLine("PlayAudio");
-            Console.WriteLine(args.EventData);
+            Console.WriteLine(directPlay==true? "Play audio":"Send audio to unity");
+            //Console.WriteLine(args.EventData);
 
             if (directPlay)
             {
@@ -330,7 +322,9 @@ namespace AzureSpeechTest
             byte[] buffer = new byte[ms.Length];
             ms.Seek(0, SeekOrigin.Begin);
             ms.Read(buffer, 0, buffer.Length);
-            netowrkModule.Send(buffer);
+            List<AldenNet.AldenNetServer.AldenNetPeer> peers = netowrkModule.GetSerer().GetAllPeer();
+            foreach(var p in peers)
+                netowrkModule.GetSerer().SendToPeer(p, buffer);
             ms.Close();
         }
 
@@ -349,7 +343,9 @@ namespace AzureSpeechTest
             byte[] buffer = new byte[ms.Length];
             ms.Seek(0, SeekOrigin.Begin);
             ms.Read(buffer, 0, buffer.Length);
-            netowrkModule.Send(buffer);
+            List<AldenNet.AldenNetServer.AldenNetPeer> peers = netowrkModule.GetSerer().GetAllPeer();
+            foreach (var p in peers)
+                netowrkModule.GetSerer().SendToPeer(p, buffer);
             ms.Close();
         }
 

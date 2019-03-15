@@ -61,7 +61,9 @@ public class InteractHandler : MonoBehaviour {
 
     public float turnSpeed = 200f;
 
-    public ShuoScripts.NetworkModule networkModule;
+    //public ShuoScripts.NetworkModule networkModule;
+
+    public AldenNet.AldenNet aldenNet;
 
     // Use this for initialization
     void Start ()
@@ -92,7 +94,8 @@ public class InteractHandler : MonoBehaviour {
         byte[] sent = new byte[sendms.Length];
         sendms.Seek(0, SeekOrigin.Begin);
         sendms.Read(sent, 0, (int)sendms.Length);
-        networkModule.Send(sent);
+        //networkModule.Send(sent);
+        aldenNet.GetClient().Send(sent);
     }
 
     bool enterCloseRange = false;
@@ -122,7 +125,8 @@ public class InteractHandler : MonoBehaviour {
             byte[] sent = new byte[sendms.Length];
             sendms.Seek(0, SeekOrigin.Begin);
             sendms.Read(sent, 0, (int)sendms.Length);
-            networkModule.Send(sent);
+            //networkModule.Send(sent);
+            aldenNet.GetClient().Send(sent);
 
             enterCloseRange = true;
         }

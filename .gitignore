@@ -10,3 +10,5 @@ db.sqlite3-wal
 /voiceServer/AzureSpeechTest/AzureSpeechTest/obj
 /voiceServer/AzureSpeechTest/AzureSpeechTest/bin
 _Bin
+/client/week1/Assets/StreamingAssets/voice.wav
+/client/week1/Assets/StreamingAssets/voice.wav.meta
