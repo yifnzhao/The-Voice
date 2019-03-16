@@ -90,10 +90,10 @@ public class VoiceHandler : MonoBehaviour {
                 byte[] voiceByte = new byte[ms.Length - ms.Position];
                 ms.Read(voiceByte, 0, voiceByte.Length);
 
-                //audioSource.clip = WavUtility.ToAudioClip(voiceByte);
-                string filePath = Application.streamingAssetsPath + "/voice.wav";
-                File.WriteAllBytes(filePath, voiceByte);
-                audioSource.clip = WavUtility.ToAudioClip(filePath);
+                //string filePath = Application.streamingAssetsPath + "/voice.wav";
+                //File.WriteAllBytes(filePath, voiceByte);
+                //audioSource.clip = WavUtility.ToAudioClip(filePath);
+                audioSource.clip = WavUtility.ToAudioClip(voiceByte);
                 audioSource.Play();
                 audioVis.clip = audioSource.clip;
 

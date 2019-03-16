@@ -49,7 +49,7 @@ public class AudioVisualization : MonoBehaviour
 
         if (mode == Mode.AudioClip)
         {
-            if (audioSource == null || clip == null)
+            if (audioSource == null || clip == null || !audioSource.isPlaying)
             {
                 return 0;
             }

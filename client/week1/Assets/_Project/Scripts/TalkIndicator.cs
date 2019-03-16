@@ -41,6 +41,11 @@ public class TalkIndicator : MonoBehaviour {
         {
             GetMat(indicators[i]).color = Color.green;
             yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.3f));
+            if (i == indicators.Length - 1)
+            {
+                yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 2f));
+                Reset();
+            }
         }
     }
 	
