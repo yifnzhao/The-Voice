@@ -3,6 +3,8 @@ research article
 Mar 26th ubisoft 4pm st-laurent
 
 2019-3-14
+natural voice change				done
+when responses, talk indicator will reset			done
 add new player guide
 optimize long sentences both think and dynamic bot
 
