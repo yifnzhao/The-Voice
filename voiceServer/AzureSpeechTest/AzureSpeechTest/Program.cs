@@ -213,8 +213,8 @@ namespace AzureSpeechTest
     public static void AuthTTS()
         {
             Console.WriteLine("Start TextToSpeech");
-            
-            Authentication auth = new Authentication("https://westus.api.cognitive.microsoft.com/sts/v1.0/issueToken", AzureKey);
+
+            Authentication auth = new Authentication("https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken", AzureKey);
             try
             {
                 accessToken = auth.GetAccessToken();
@@ -243,7 +243,8 @@ namespace AzureSpeechTest
                 return;
             }
 
-            string requestUri = "https://westus.tts.speech.microsoft.com/cognitiveservices/v1";
+            //string requestUri = "https://westus.tts.speech.microsoft.com/cognitiveservices/v1";
+            string requestUri = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1";
             var cortana = new Synthesize();
 
             cortana.OnAudioAvailable += PlayAudio;
@@ -258,11 +259,12 @@ namespace AzureSpeechTest
                 VoiceType = Gender.Female,  // useless!
                 // Refer to the documentation for complete list of supported locales.
                 Locale = "en-US",
+                //Locale = "fr-CA",
                 // You can also customize the output voice. Refer to the documentation to view the different
                 // voices that the TTS service can output.
-                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Jessa24KRUS)",
-                //VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Guy24KRUS)",
+                //VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, Jessa24KRUS)",
                 // VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
+                VoiceName = "Microsoft Server Speech Text to Speech Voice (en-US, JessaNeural)",
 
                 // Service can return audio in different output format.
                 //OutputFormat = AudioOutputFormat.Riff24Khz16BitMonoPcm,
@@ -365,8 +367,9 @@ namespace AzureSpeechTest
             // Creates an instance of a speech config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").
             // The default language is "en-us".
-            var config = SpeechConfig.FromSubscription(AzureKey, "westus");
-
+            //var config = SpeechConfig.FromSubscription(AzureKey, "westus");
+            var config = SpeechConfig.FromSubscription(AzureKey, "eastus");
+            
             // Creates a speech recognizer using microphone as audio input.
             // SpeechRecognizer constructor without params for microphone
             using (var recognizer = new SpeechRecognizer(config))
