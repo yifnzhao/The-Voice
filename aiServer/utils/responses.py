@@ -46,3 +46,8 @@ class responses:
 		print(location)
 
 		return location
+
+	def clean_html(self, string_with_html):
+		cleanr = re.compile('<.*?>')
+		cleantext = re.sub(cleanr, '', string_with_html)
+		return cleantext

@@ -4,7 +4,6 @@
 # The Voice : Main server code for NLP and text responses.
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
-import os
 import json
 import codecs
 import requests
@@ -28,9 +27,7 @@ response_util= responses.responses()
 
 # Response bots.
 eliza_bot = eliza.eliza()
-if os.path.exists("db.sqlite3"):
-	os.remove("db.sqlite3")
-chatter_bot = chatterbot_facade.chatterbot_facade()
+learn_bot = chatterbot_facade.chatterbot_facade()
 dynamic_bot = webquery.webquery()
 emotion_bot = emotion.emotion()
 
@@ -47,7 +44,7 @@ def listen():
 		query = json_response['content']
 		pitch = float(json_response['pitch'])
 	except Exception:
-		print("Some Exception");
+		print("Bad request!");
 		return jsonify({"response" : "Bad request!"}), 400
 
 	# Default response.
@@ -56,18 +53,22 @@ def listen():
 	# Smart response.
 	# This is in progress...
 	try:
-		# Dynamic response
-		response = dynamic_bot.respond(query)
-		if response == "":
+		# LearnBot response.
+		response = learn_bot.respond(query)
+		#response = ""
+		if response == "" or response == [] or response == "Artificial Intelligence is the branch of engineering and science devoted to constructing machines that think.":
 			raise Exception
-		print("DynamicBot Responding.")
+		print("LearnBot Responding.")
 	except Exception:
 		try:
-			# Chatterbot response.
-			response = chatter_bot.respond(query)
-			if response == "":
+			# Dynamic response
+			response = dynamic_bot.respond(query)
+			if response == "" or response == []:
 				raise Exception
-			print("ChatterBot Responding.")
+			# Train LearnBot with the response.
+			response = response_util.format_response(response)
+			learn_bot.train(query, response)
+			print("DynamicBot Responding.")
 		except:
 			# Fall-back response
 			response = eliza_bot.respond(query)
