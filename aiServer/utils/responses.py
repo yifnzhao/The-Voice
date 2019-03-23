@@ -8,8 +8,8 @@ import re, string
 
 class responses:
 	def __init__(self):
-		self.punctuation_regex = re.compile('[%s]' % re.escape(string.punctuation))
-		self.end_punctuations = [".", "?", "!"]
+		self.end_punctuations = ".?!"
+		self.punctuation_regex = re.compile('[%s]' % re.escape(self.end_punctuations))
 
 	#----------------------------------------------------------------------
 	#  Do the necessary formatting on the response.
@@ -28,24 +28,13 @@ class responses:
 			# Get first 256 characters.
 			# We know just doing this might result with incomplate responses but it is ok for now.
 			response = response[:256]
-			#self.get_last_punctuation_location(response)
+			response = self.get_first_sentence(response)
 
 		return response
 
-	def get_last_punctuation_location(self,response):
-		last_end_punctuation_index = 0
-		#for punctuation in self.end_punctuations:
-		#	if last_end_punctuation_index
-
-
-
-		location = 0
-
-		location = self.punctuation_regex.search(response[::-1]).end()
-
-		print(location)
-
-		return location
+	def get_first_sentence(self,response):
+		first_sentence = self.punctuation_regex.split(response)[:1][0] + "."
+		return first_sentence
 
 	def clean_html(self, string_with_html):
 		cleanr = re.compile('<.*?>')
