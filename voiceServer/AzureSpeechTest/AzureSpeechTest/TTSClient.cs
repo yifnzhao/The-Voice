@@ -358,6 +358,10 @@ namespace CognitiveServicesTTS
 
             var httpTask = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             Console.WriteLine("Response status code: [{0}]", httpTask.Result.StatusCode);
+            if (httpTask.Result.StatusCode != HttpStatusCode.OK)
+            {
+                Console.WriteLine("ErrorReason: [{0}]", httpTask.Result.ReasonPhrase);
+            }
 
             var saveTask = httpTask.ContinueWith(
                 async (responseMessage, token) =>
