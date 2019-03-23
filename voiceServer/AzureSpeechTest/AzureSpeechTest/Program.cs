@@ -328,6 +328,8 @@ namespace AzureSpeechTest
             foreach(var p in peers)
                 netowrkModule.GetSerer().SendToPeer(p, buffer);
             ms.Close();
+
+            Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End");
         }
 
         static void SendPitchRequestToUnity()
@@ -375,6 +377,7 @@ namespace AzureSpeechTest
             using (var recognizer = new SpeechRecognizer(config))
             {
                 // Starts recognizing.
+                Console.WriteLine("Begin <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                 Console.WriteLine("Say something...");
                 recognizedByMS = "";
 
