@@ -136,6 +136,10 @@ public class AnimationHandler : MonoBehaviour {
     void Update_Walk()
     { }
 
+    public void StopTalk()
+    {
+        animator.SetBool("talk", false);
+    }
 
     void Enter_Talk()
     {
