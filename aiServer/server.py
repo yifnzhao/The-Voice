@@ -49,6 +49,7 @@ def listen():
 
 	# Default response.
 	response = "I could not understand!"
+	correct_response = False
 
 	# Smart response.
 	# This is in progress...
@@ -65,9 +66,9 @@ def listen():
 			response = response_util.format_response(dynamic_bot.respond(query))
 			if response == "" or response == []:
 				raise Exception
-			# Train LearnBot with the response.
-			learn_bot.train(query, response)
 			print("DynamicBot Responding.")
+			# Train LearnBot with the response
+			learn_bot.train(query, response)
 		except:
 			# Fall-back response
 			response = eliza_bot.respond(query)

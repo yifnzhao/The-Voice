@@ -13,6 +13,7 @@ import time
 from timeout3 import timeout, TIMEOUT_EXCEPTION
 from utils import database
 from chatterbot import ChatBot
+from chatterbot.conversation import Statement
 from chatterbot.storage import StorageAdapter
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.trainers import UbuntuCorpusTrainer
@@ -77,8 +78,6 @@ class chatterbot_facade:
 
 	def initial_traning(self):
 		print("Training...")
-		trainer = ChatterBotCorpusTrainer(self.chatbot)
-		trainer.train("chatterbot.corpus.english")
 		self.trainer = ListTrainer(self.chatbot)
 		self.trainer.train([
 			"How are you?",
@@ -87,6 +86,9 @@ class chatterbot_facade:
 			"Thank you",
 			"You are welcome.",
 		])
+		trainer = ChatterBotCorpusTrainer(self.chatbot)
+		trainer.train("chatterbot.corpus.english")
+
 
 	def additional_traning(self):
 		print("Additional Training...")
@@ -99,8 +101,13 @@ class chatterbot_facade:
 		print("LearnBot Training...")
 		if self.trainer == "":
 			self.trainer = ListTrainer(self.chatbot)
-		#self.chatbot.learn_response(response, query)
-		self.trainer.train([query, response])	
+		self.trainer.train([query, response])
+
+	def correct_answer(self,query,response):
+		correct_response = Statement(text=response)
+		input_statement = Statement(text=query)
+		self.chatbot.learn_response(correct_response, input_statement)
+		print('Responses added to bot!')
 
 	#----------------------------------------------------------------------
 	#  Predict the emotion of a text as happy, sad or natural.
@@ -110,7 +117,7 @@ class chatterbot_facade:
 		response = self.chatbot.get_response(str, search_text=str)
 		#print(response.text)
 		#print(response.confidence)
-		if response.confidence < self.maximum_similarity_threshold:
+		if response.confidence < self.maximum_similarity_threshold and response.confidence != 0.08:
 			return ""
 		#response = self.chatbot.get_response(str).text
 		return response.text

@@ -17,7 +17,7 @@ class webquery:
 	#----------------------------------------------------------------------
 	#  Get answer from web.
 	#----------------------------------------------------------------------
-	@timeout(5)
+	@timeout(10)
 	def respond(self,str):
 		# Get DuckDuckGo response.
 		response = self.duckduckgo_api.respond(str)
