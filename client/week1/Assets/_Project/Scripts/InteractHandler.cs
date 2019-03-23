@@ -95,7 +95,8 @@ public class InteractHandler : MonoBehaviour {
         sendms.Seek(0, SeekOrigin.Begin);
         sendms.Read(sent, 0, (int)sendms.Length);
         //networkModule.Send(sent);
-        aldenNet.GetClient().Send(sent);
+        if(aldenNet.GetClient() != null)
+            aldenNet.GetClient().Send(sent);
     }
 
     bool enterCloseRange = false;
@@ -126,7 +127,8 @@ public class InteractHandler : MonoBehaviour {
             sendms.Seek(0, SeekOrigin.Begin);
             sendms.Read(sent, 0, (int)sendms.Length);
             //networkModule.Send(sent);
-            aldenNet.GetClient().Send(sent);
+            if(aldenNet.GetClient() != null)
+                aldenNet.GetClient().Send(sent);
 
             enterCloseRange = true;
         }
