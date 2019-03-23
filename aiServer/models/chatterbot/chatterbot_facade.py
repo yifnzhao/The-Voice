@@ -15,6 +15,7 @@ from utils import database
 from chatterbot import ChatBot
 from chatterbot.storage import StorageAdapter
 from chatterbot.trainers import ChatterBotCorpusTrainer
+from chatterbot.trainers import UbuntuCorpusTrainer
 from chatterbot.trainers import ListTrainer
 
 class chatterbot_facade:
@@ -22,8 +23,8 @@ class chatterbot_facade:
 		self.chatbot = ""
 		self.trainer = ""
 		self.logic_adapter_1="chatterbot.logic.BestMatch"
-		self.maximum_similarity_threshold = 0.95
-		self.statement_comparison_function = "chatterbot.comparisons.levenshtein_distance"
+		self.maximum_similarity_threshold =  0.95
+		self.statement_comparison_function = "chatterbot.comparisons.LevenshteinDistance"
 
 		self.dbname = "learnbot"
 		self.db_util= database.database()
@@ -34,6 +35,7 @@ class chatterbot_facade:
 			self.initilize_mongo()
 			if not self.db_util.check_mongo_db_exists(self.dbname):
 				self.initial_traning()
+				#self.additional_traning()
 
 		else:
 			print("No MongoDB instance found.")
@@ -86,10 +88,18 @@ class chatterbot_facade:
 			"You are welcome.",
 		])
 
+	def additional_traning(self):
+		print("Additional Training...")
+		print("This will take a while!!!")
+		trainer = UbuntuCorpusTrainer(self.chatbot)
+		trainer.train()
+
+
 	def train(self,query,response):
 		print("LearnBot Training...")
 		if self.trainer == "":
 			self.trainer = ListTrainer(self.chatbot)
+		#self.chatbot.learn_response(response, query)
 		self.trainer.train([query, response])	
 
 	#----------------------------------------------------------------------
@@ -97,6 +107,10 @@ class chatterbot_facade:
 	#----------------------------------------------------------------------
 	@timeout(5)
 	def respond(self,str):
-		response = self.chatbot.get_response(str, search_text=str).text
+		response = self.chatbot.get_response(str, search_text=str)
+		#print(response.text)
+		#print(response.confidence)
+		if response.confidence < self.maximum_similarity_threshold:
+			return ""
 		#response = self.chatbot.get_response(str).text
-		return response
+		return response.text

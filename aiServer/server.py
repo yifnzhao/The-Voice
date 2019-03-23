@@ -56,17 +56,16 @@ def listen():
 		# LearnBot response.
 		response = learn_bot.respond(query)
 		#response = ""
-		if response == "" or response == [] or response == "Artificial Intelligence is the branch of engineering and science devoted to constructing machines that think.":
+		if response == "" or response == []:
 			raise Exception
 		print("LearnBot Responding.")
 	except Exception:
 		try:
 			# Dynamic response
-			response = dynamic_bot.respond(query)
+			response = response_util.format_response(dynamic_bot.respond(query))
 			if response == "" or response == []:
 				raise Exception
 			# Train LearnBot with the response.
-			response = response_util.format_response(response)
 			learn_bot.train(query, response)
 			print("DynamicBot Responding.")
 		except:
