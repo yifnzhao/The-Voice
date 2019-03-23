@@ -36,7 +36,10 @@ public class MicrophoneHandler : MonoBehaviour {
     {
         // PlayerTalk
         //network.Send(BitConverter.GetBytes(1000));
-        aldenNet.GetClient().Send(BitConverter.GetBytes(1000));
+        if(aldenNet.GetClient()!= null)
+            aldenNet.GetClient().Send(BitConverter.GetBytes(1000));
+        else
+            Debug.LogError("No Server Connected");
         micSampler.StartSampling();
 
         talkIndicator.LightUp(1);
@@ -99,6 +102,9 @@ public class MicrophoneHandler : MonoBehaviour {
         sendmss.Seek(0, SeekOrigin.Begin);
         sendmss.Read(senttt, 0, (int)sendmss.Length);
         //network.Send(senttt);
-        aldenNet.GetClient().Send(senttt);
+        if (aldenNet.GetClient() != null)
+            aldenNet.GetClient().Send(senttt);
+        else
+            Debug.LogError("No Server Connected");
     }
 }
