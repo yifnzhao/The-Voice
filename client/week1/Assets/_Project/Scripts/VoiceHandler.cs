@@ -144,7 +144,9 @@ public class VoiceHandler : MonoBehaviour {
 
     void ChangeToIdle()
     {
-        animationHandler.ChangeState(AnimationHandler.Anim.Idle);
+        //if(!InteractHandler.isWalking)
+        //animationHandler.ChangeState(AnimationHandler.Anim.Idle);
+        animationHandler.StopTalk();
     }
 
     void CleanSubtitle()

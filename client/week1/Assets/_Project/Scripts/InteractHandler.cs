@@ -163,6 +163,8 @@ public class InteractHandler : MonoBehaviour {
 
     Vector3 playerHeadLastPos;
     Vector3 girlHeadLastPos;
+    public static bool isWalking = false;
+
     void Update_Range()
     {
         float playerSpeed = Vector3.Distance(playerHeadLastPos, playerHead.position);
@@ -204,6 +206,7 @@ public class InteractHandler : MonoBehaviour {
             float tolerance = 0.1f;
             if (range < closeRange - tolerance)
             {
+                isWalking = false;
                 Enter_CloseRange();
                 Update_Walkback();
                 enterMediumRange = false;
@@ -211,6 +214,7 @@ public class InteractHandler : MonoBehaviour {
             }
             else if (range >= closeRange- tolerance && range < mediumRange- tolerance)
             {
+                isWalking = false;
                 Enter_MediumRange();
                 enterCloseRange = false;
                 enterFarRange = false;
@@ -250,6 +254,7 @@ public class InteractHandler : MonoBehaviour {
 
     void Update_Follow()
     {
+        isWalking = true;
         GameObject yifan = animator.gameObject;
         Vector3 from = new Vector3(yifan.transform.position.x, 0, yifan.transform.position.z);
         Vector3 to = new Vector3(playerHead.position.x, 0, playerHead.position.z);
