@@ -14,7 +14,7 @@ from utils import *
 from models.eliza import eliza
 from models.chatterbot import chatterbot_facade
 from models.webquery import webquery
-from stubs.emotion import emotion
+from models.emotion import emotion
 
 from logging.handlers import RotatingFileHandler
 
