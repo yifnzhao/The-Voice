@@ -6,4 +6,5 @@ pytz==2018.9
 func_timeout==4.3.0
 duckduckpy==0.2
 beautifulsoup4==4.7.1
+lxml==4.3.2
 thesaurus==0.2.3
