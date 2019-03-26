@@ -44,7 +44,10 @@ class responses:
 		return first_sentence
 
 	def clean_dynamic(self, string):
-		return self.remove_non_end_punctuation(self.clean_html(string)).strip()
+		if isinstance(string, str):
+			return self.remove_non_end_punctuation(self.clean_html(string)).strip()
+		else:
+			return ""
 
 	def clean_html(self, string_with_html):
 		cleanr = re.compile('<.*?>')
@@ -55,5 +58,5 @@ class responses:
 		non_end_punctuations = '''()-[]{};:'"\,<>/@#$%^&*_~'''
 		for char in string: 
 			if char in non_end_punctuations: 
-				cleantext = string.replace(char, "")
-		return cleantext
+				string = string.replace(char, "")
+		return string.replace("\r","").replace("\n","")

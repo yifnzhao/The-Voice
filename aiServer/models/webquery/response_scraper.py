@@ -19,12 +19,14 @@ class response_scraper:
 	#----------------------------------------------------------------------
 	@timeout(3)
 	def respond(self,query):
-		query_url = self.yahoo_answers_search_url+query;
+		query_url = self.yahoo_answers_search_url+'"'+query+'"';
 		
 		response = requests.get(query_url)
 		query_page = str(BeautifulSoup(response.content.decode('utf-8','ignore'), features="lxml"))
 
 		response_url = self.getResponseUrl(query_page)
+		if response_url == "":
+			return ""
 		response = requests.get(response_url)
 		response_page = str(BeautifulSoup(response.content.decode('utf-8','ignore'), features="lxml"))
 		
