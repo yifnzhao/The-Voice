@@ -33,10 +33,30 @@ class responses:
 		return response
 
 	def get_first_sentence(self,response):
-		first_sentence = self.punctuation_regex.split(response)[:1][0] + "."
+		sentence_array = self.punctuation_regex.split(response)
+		first_sentence = sentence_array[:1][0] + "."
+		# If it is too short try to add more.
+		if len(first_sentence) < 10:
+			try:
+				first_sentence += sentence_array[:2][0] + "."
+			except:
+				pass
 		return first_sentence
+
+	def clean_dynamic(self, string):
+		if isinstance(string, str):
+			return self.remove_non_end_punctuation(self.clean_html(string)).strip()
+		else:
+			return ""
 
 	def clean_html(self, string_with_html):
 		cleanr = re.compile('<.*?>')
 		cleantext = re.sub(cleanr, '', string_with_html)
 		return cleantext
+
+	def remove_non_end_punctuation(self, string):
+		non_end_punctuations = '''()-[]{};:'"\,<>/@#$%^&*_~'''
+		for char in string: 
+			if char in non_end_punctuations: 
+				string = string.replace(char, "")
+		return string.replace("\r","").replace("\n","")

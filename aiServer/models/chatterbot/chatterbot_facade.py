@@ -13,7 +13,9 @@ import time
 from timeout3 import timeout, TIMEOUT_EXCEPTION
 from utils import database
 from chatterbot import ChatBot
-from chatterbot.storage import StorageAdapter
+from chatterbot.conversation import Statement
+from chatterbot.comparisons import synset_distance
+from chatterbot.response_selection import get_random_response
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.trainers import UbuntuCorpusTrainer
 from chatterbot.trainers import ListTrainer
@@ -22,9 +24,7 @@ class chatterbot_facade:
 	def __init__(self):
 		self.chatbot = ""
 		self.trainer = ""
-		self.logic_adapter_1="chatterbot.logic.BestMatch"
-		self.maximum_similarity_threshold =  0.95
-		self.statement_comparison_function = "chatterbot.comparisons.LevenshteinDistance"
+		self.maximum_similarity_threshold =  0.90
 
 		self.dbname = "learnbot"
 		self.db_util= database.database()
@@ -63,22 +63,22 @@ class chatterbot_facade:
 								database_uri=_database_uri,
 								logic_adapters=[
 									{
-										"import_path": self.logic_adapter_1,
+										"import_path": "chatterbot.logic.BestMatch",
 										"default_response": "",
 										"maximum_similarity_threshold": self.maximum_similarity_threshold,
-										"statement_comparison_function": self.statement_comparison_function
+										"response_selection_method": get_random_response
 									}
 								],
-								filters=[
-									"chatterbot.filters.RepetitiveResponseFilter"
+								statement_comparison_function=self.custom_comparison_function,
+								filters=[],
+								preprocessors=[
+									'chatterbot.preprocessors.clean_whitespace'
 								],
 								read_only=True
 							)		
 
 	def initial_traning(self):
 		print("Training...")
-		trainer = ChatterBotCorpusTrainer(self.chatbot)
-		trainer.train("chatterbot.corpus.english")
 		self.trainer = ListTrainer(self.chatbot)
 		self.trainer.train([
 			"How are you?",
@@ -87,6 +87,9 @@ class chatterbot_facade:
 			"Thank you",
 			"You are welcome.",
 		])
+		trainer = ChatterBotCorpusTrainer(self.chatbot)
+		trainer.train("chatterbot.corpus.english")
+
 
 	def additional_traning(self):
 		print("Additional Training...")
@@ -97,20 +100,35 @@ class chatterbot_facade:
 
 	def train(self,query,response):
 		print("LearnBot Training...")
-		if self.trainer == "":
-			self.trainer = ListTrainer(self.chatbot)
-		#self.chatbot.learn_response(response, query)
-		self.trainer.train([query, response])	
+		#if self.trainer == "":
+		#	self.trainer = ListTrainer(self.chatbot)
+		#self.trainer.train([
+		#	query,
+		#	response
+		#])
+		self.correct_answer(query,response)
+
+	def correct_answer(self,query,response):
+		correct_response = Statement(text=response)
+		input_statement = Statement(text=query)
+		self.chatbot.learn_response(correct_response, input_statement)
+		print('Response added to bot!')
+
+	def custom_comparison_function(self, statement, other_statement):
+		# Comparison logic
+		# We are using this algorithim by default for exact string match.
+		# The LevenshteinDistance, SynsetDistance, SentimentComparison and JaccardSimilarity algorithims
+		# provided by ChatterBot did not match our need.
+		# Return calculated value here
+		return 0.0
 
 	#----------------------------------------------------------------------
-	#  Predict the emotion of a text as happy, sad or natural.
+	#  Return a stored response to a query.
 	#----------------------------------------------------------------------
-	@timeout(5)
+	@timeout(3)
 	def respond(self,str):
 		response = self.chatbot.get_response(str, search_text=str)
-		#print(response.text)
-		#print(response.confidence)
-		if response.confidence < self.maximum_similarity_threshold:
-			return ""
+		#if response.confidence < self.maximum_similarity_threshold:
+		#	return ""
 		#response = self.chatbot.get_response(str).text
 		return response.text
