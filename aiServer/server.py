@@ -15,6 +15,7 @@ from models.eliza import eliza
 from models.chatterbot import chatterbot_facade
 from models.webquery import webquery
 from models.emotion import emotion
+from models.user import user_input
 
 from logging.handlers import RotatingFileHandler
 
@@ -30,6 +31,7 @@ eliza_bot = eliza.eliza()
 learn_bot = chatterbot_facade.chatterbot_facade()
 dynamic_bot = webquery.webquery()
 emotion_bot = emotion.emotion()
+userbot_bot = user_input.user_input()
 
 @app.route("/", methods=['GET', 'POST'])
 def root(): 
@@ -49,30 +51,34 @@ def listen():
 
 	# Default response.
 	response = "I could not understand!"
-	correct_response = False
 
-	# Smart response.
-	# This is in progress...
-	try:
-		# LearnBot response.
-		response = learn_bot.respond(query)
-		#response = ""
-		if response == "" or response == []:
-			raise Exception
-		print("LearnBot Responding.")
-	except Exception:
+	# See if we wanna teach to the bot.
+	response = userbot_bot.respond(learn_bot, query)
+
+
+	if response == "":
+		# Smart response.
+		# This is in progress...
 		try:
-			# Dynamic response
-			response = response_util.format_response(dynamic_bot.respond(query))
+			# LearnBot response.
+			response = learn_bot.respond(query)
+			#response = ""
 			if response == "" or response == []:
 				raise Exception
-			print("DynamicBot Responding.")
-			# Train LearnBot with the response
-			learn_bot.train(query, response)
-		except:
-			# Fall-back response
-			response = eliza_bot.respond(query)
-			print("Eliza Responding.")
+			print("LearnBot Responding.")
+		except Exception:
+			try:
+				# Dynamic response
+				response = response_util.format_response(dynamic_bot.respond(query))
+				if response == "" or response == []:
+					raise Exception
+				print("DynamicBot Responding.")
+				# Train LearnBot with the response
+				learn_bot.train(query, response)
+			except:
+				# Fall-back response
+				response = eliza_bot.respond(query)
+				print("Eliza Responding.")
 
 	# Detect emotion.
 	emotion_paramaters = emotion_bot.predict(query,pitch)
