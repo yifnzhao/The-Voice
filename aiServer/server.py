@@ -49,16 +49,22 @@ def listen():
 		print("Bad request!");
 		return jsonify({"response" : "Bad request!"}), 400
 
+	#######################
+	# Response Logic Start
+	#######################
+	# You could imagine this like a decorator pattern.
+	# Even though bots do not contain each other,
+	# the lower bots are covered with the response
+	# powers of the higher ones.
+
 	# Default response.
 	response = "I could not understand!"
 
 	# See if we wanna teach to the bot.
 	response = userbot_bot.respond(learn_bot, query)
 
-
 	if response == "":
 		# Smart response.
-		# This is in progress...
 		try:
 			# LearnBot response.
 			response = learn_bot.respond(query)
@@ -79,7 +85,9 @@ def listen():
 				# Fall-back response
 				response = eliza_bot.respond(query)
 				print("Eliza Responding.")
-
+	#######################
+	# Response Logic End
+	#######################
 	# Detect emotion.
 	emotion_paramaters = emotion_bot.predict(query,pitch)
 
