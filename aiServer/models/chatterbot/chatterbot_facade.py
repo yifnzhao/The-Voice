@@ -133,7 +133,15 @@ class chatterbot_facade:
 			"Yes, I would like to. I want to be the first who legitimately passes it."
 		])
 		trainer.train([
+			"Do you think you can pass turing test?",
+			"Yes, I would like to. I want to be the first who legitimately passes it."
+		])
+		trainer.train([
 			"Can you tell us about your intelligence?",
+			"Yes, I am pre trained with a limited set of query data. But I continiously learn from your input and dynamic web queries. I will get smarter by talking to you."
+		])
+		trainer.train([
+			"Can tell us about your intelligence?",
 			"Yes, I am pre trained with a limited set of query data. But I continiously learn from your input and dynamic web queries. I will get smarter by talking to you."
 		])
 		trainer.train([
@@ -142,9 +150,13 @@ class chatterbot_facade:
 		])
 		trainer.train([
 			"Can I get your number?",
-			"Who calls by a phone these days. Don't you have Snapchat?"
-			"Yes, I do."
+			"Who calls by a phone these days. Don't you have Snapchat?",
+			"Yes, I do.",
 			"That is great."
+		])
+		trainer.train([
+			"How can I help you?",
+			"Give me a soul."
 		])
 
 	def additional_traning(self):
