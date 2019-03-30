@@ -182,6 +182,9 @@ class chatterbot_facade:
 		self.chatbot.learn_response(correct_response, input_statement)
 		print('Response added to bot!')
 
+	def remove_data(self,query):
+		self.chatbot.storage.remove(query)
+
 	def custom_comparison_function(self, statement, other_statement):
 		# Comparison logic
 		# We are using this algorithim by default for exact string match.

@@ -38,6 +38,7 @@ class user_input:
 				self.waiting_question = False
 				self.waiting_answer = False
 				self.answer = str
+				learn_bot.remove_data(learn_bot.respond(self.question))
 				learn_bot.train(self.question, self.answer)
 				print("UserBot Responding.")
 				return "I learned that: " + self.question + " " + self.answer
