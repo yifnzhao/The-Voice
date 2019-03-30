@@ -7,7 +7,6 @@
 #----------------------------------------------------------------------
 import requests
 from bs4 import BeautifulSoup
-from timeout3 import timeout, TIMEOUT_EXCEPTION
 
 class response_scraper:
 	def __init__(self):
@@ -17,7 +16,6 @@ class response_scraper:
 	#----------------------------------------------------------------------
 	#  Scrape a response from Web.
 	#----------------------------------------------------------------------
-	@timeout(3)
 	def respond(self,query):
 		query_url = self.yahoo_answers_search_url+'"'+query+'"';
 		

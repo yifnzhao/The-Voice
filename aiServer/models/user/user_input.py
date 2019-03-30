@@ -4,6 +4,7 @@
 # The Voice : Get the answer from user.
 # Author :  Korhan Akcura
 #----------------------------------------------------------------------
+from string import punctuation
 
 class user_input:
 	def __init__(self):
@@ -17,7 +18,9 @@ class user_input:
 	#  Get answer from user.
 	#----------------------------------------------------------------------
 	def respond(self,learn_bot,str):
-		if str == "I want you to learn this." and not self.waiting_information:
+		striped_string = str.strip(punctuation).lower()
+
+		if striped_string == "i want you to learn this" and not self.waiting_information:
 			self.waiting_information = True
 			self.waiting_question = True
 			print("UserBot Responding.")
@@ -43,5 +46,9 @@ class user_input:
 				self.waiting_question = False
 				self.waiting_answer = False
 				return ""
+
+		if "my name is" in striped_string:
+			name = striped_string.replace('my name is', '')
+			return "I am delighted to meet you" + name
 
 		return ""
