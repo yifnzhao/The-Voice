@@ -129,7 +129,15 @@ class chatterbot_facade:
 			"Creativity, intelligence and having a soul."
 		])
 		trainer.train([
+			"What is special about being human?",
+			"Creativity, intelligence and having a soul."
+		])
+		trainer.train([
 			"Do you think you can pass Turing Test?",
+			"Yes, I would like to. I want to be the first who legitimately passes it."
+		])
+		trainer.train([
+			"Do you think you can pass the Turing Test?",
 			"Yes, I would like to. I want to be the first who legitimately passes it."
 		])
 		trainer.train([
