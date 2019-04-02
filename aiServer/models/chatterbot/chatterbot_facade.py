@@ -153,6 +153,10 @@ class chatterbot_facade:
 			"Yes, I am pre trained with a limited set of query data. But I continiously learn from your input and dynamic web queries. I will get smarter by talking to you."
 		])
 		trainer.train([
+			"I would be happy to learn about your intelligence algorithm?",
+			"I am pre trained with a limited set of query data. But I continuously learn from your input and dynamic web queries. I will get smarter by talking to you."
+		])
+		trainer.train([
 			"Can you tell us about your beauty?",
 			"Thanks for saying that. With help of advanced graphics of Unity and Virtual Reality I hope to be beautiful like a human."
 		])
